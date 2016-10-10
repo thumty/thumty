@@ -1,0 +1,92 @@
+{
+  "host": "localhost",
+  "port": 8080,
+
+  // Base 64 encoded secret key
+  "secret": "i9ccFBc9cMbg5k+iQyvxVRFS05QoAoaqpTbYFOdjjFI=",
+  "secured": false,
+
+  "loaders": {
+    // Http loader configuration, http loader disabled if omitted.
+    "http" : {
+      // Optional base urls
+      "base_url": ["http://example.com/", "http://www.example.com/"],
+
+      // Optional hosts allow, deny
+      "hosts" :{
+        "allow": ["*.example.com", "example.com", "*"],
+        "deny" : ["deny.example.com"]
+      },
+
+      "connection_timeout": "120sec",
+      "connection_idle_timeout": "1sec",
+      "connection_pool_size": 10,
+
+      "request_timeout": "130sec",
+      "max_redirects": 5,
+
+      "min_cache_time": "2h",
+      "max_cache_time": "24h",
+
+      "cache" :{
+        "size": "1Gb",
+        "expires_after_access": "1day",
+        "expires_after_write": "1day"
+      }
+    },
+
+    "local" : { // Local fs loader configuration
+      "base_path" : "./",
+      "expires_in" : "24h"
+    }
+  },
+
+  // Image filters configuration
+  "filters" : {
+    "blur" : {
+      "radius": 2
+    }
+  },
+
+  // Thumb build configuration
+  "thumbs": {
+    // Default quality
+    "quality": 0.95,
+
+    // Default output formats
+    "formats": ["jpg", "png", "gif"],
+
+    "cache" :{
+      "size": "1Gb",
+      "expires_after_access": "1day",
+      "expires_after_write": "1day"
+    }
+  },
+
+  // Features detection configuration
+  "features" : {
+    "resize" : {
+      "width": 1024,
+      "height": 1024
+    },
+    "weights" :{
+      "front_face": 10,
+      "profile_face": 10,
+      "features": 1
+    }
+  },
+
+  // Cache configuration
+  "cache" : {
+    "type": "local",
+    "path": "./data",
+
+    "datasource" : {
+      "jdbc_url": "jdbc:h2:./data/db;LOCK_TIMEOUT=100;MVCC=true",
+      "driver_class": "org.h2.Driver",
+      "connection_timeout": 1000,
+      "max_pool_size": 30,
+      "min_pool_size": 3
+    }
+  }
+}

@@ -1,0 +1,10 @@
+dependencies {
+    compile libraries.vertx_core
+    compile libraries.vertx_codegen
+    compile libraries.vertx_jdbc
+    compile libraries.h2db
+
+    testCompile libraries.vertx_unit
+    testCompile libraries.h2db
+    testCompile libraries.hsqldb
+}

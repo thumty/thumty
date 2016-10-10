@@ -1,0 +1,62 @@
+ext {
+    libVersions = [
+            guava        : '19.0',
+            restAssured  : '2.8.0',
+            hamcrest     : '1.3',
+            mockito      : '1.9.5',
+            festAssert   : '2.0M10',
+            junit        : '4.11',
+            flyway       : '3.2.1',
+            postgresql   : '9.1-901-1.jdbc4',
+            wiremock     : '1.58',
+            vertx        : '3.3.3',
+            jsr305       : '1.3.9',
+            tika         : '1.13',
+            h2db         : '1.3.176',
+            h2db4        : '1.4.192',
+            hsqldb       : '2.3.4',
+            twelveMonkeys: '3.2.1',
+            jhlabs       : '2.0.235-1'
+    ]
+
+    //noinspection GroovyAssignabilityCheck
+    libraries = [
+            unit_test          : [
+                    "org.easytesting:fest-assert-core:${libVersions.festAssert}",
+                    "org.mockito:mockito-core:${libVersions.mockito}",
+                    "org.hamcrest:hamcrest-all:${libVersions.hamcrest}",
+            ],
+
+            wiremock           : ["com.github.tomakehurst:wiremock:${libVersions.wiremock}"],
+
+            vertx_core         : "io.vertx:vertx-core:${libVersions.vertx}",
+            vertx_web          : "io.vertx:vertx-web:${libVersions.vertx}",
+            vertx_jdbc         : "io.vertx:vertx-jdbc-client:${libVersions.vertx}",
+            vertx_oauth2       : "io.vertx:vertx-auth-oauth2:${libVersions.vertx}",
+            vertx_postgresql   : "io.vertx:vertx-mysql-postgresql-client:${libVersions.vertx}",
+            vertx_codegen      : "io.vertx:vertx-codegen:${libVersions.vertx}",
+            vertx_hazelcast    : "io.vertx:vertx-hazelcast:${libVersions.vertx}",
+            vertx_service_proxy: "io.vertx:vertx-service-proxy:${libVersions.vertx}",
+            vertx_unit         : "io.vertx:vertx-unit:${libVersions.vertx}",
+
+            tika               : "org.apache.tika:tika-core:${libVersions.tika}",
+            h2db               : "com.h2database:h2:${libVersions.h2db}",
+            hsqldb             : "org.hsqldb:hsqldb:${libVersions.hsqldb}",
+
+            mvstore            : "com.h2database:h2-mvstore:${libVersions.h2db4}",
+
+            twelveMonkeys      : [
+                    "com.twelvemonkeys.imageio:imageio-core:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-jpeg:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-tiff:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-bmp:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-psd:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-pcx:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-iff:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-metadata:${libVersions.twelveMonkeys}",
+            ],
+
+            jhlabs             : "com.jhlabs:filters:${libVersions.jhlabs}"
+
+    ]
+}

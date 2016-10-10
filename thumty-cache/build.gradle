@@ -1,0 +1,13 @@
+dependencies {
+    compile project(':thumty-common')
+    compile project(':thumty-store')
+
+    compile 'com.jakewharton.byteunits:byteunits:0.9.1'
+
+    compile libraries.vertx_core
+    compile libraries.vertx_jdbc
+
+    testCompile libraries.vertx_unit
+    testCompile libraries.h2db
+    testCompile libraries.hsqldb
+}

@@ -1,0 +1,25 @@
+configurations {
+    all*.exclude group: 'org.bytedeco', module: 'javacpp-presets'
+}
+
+dependencies {
+    compile project(':thumty-store')
+    compile project(':thumty-loader')
+    compile project(':thumty-cache')
+    compile project(':thumty-image')
+
+    compile libraries.vertx_core
+    compile libraries.vertx_codegen
+    compile libraries.vertx_service_proxy
+
+    // OpenCV
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.1.0-1.2'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.1.0-1.2', classifier: 'macosx-x86_64'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.1.0-1.2', classifier: 'windows-x86_64'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.1.0-1.2', classifier: 'linux-x86_64'
+}
+
+
+compileJava {
+    dependsOn annotationProcessing
+}

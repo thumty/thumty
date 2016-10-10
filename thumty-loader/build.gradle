@@ -1,0 +1,9 @@
+dependencies {
+    compile project(':thumty-common')
+    compile project(':thumty-store')
+
+    compile libraries.vertx_core
+
+    testCompile libraries.vertx_unit
+    testCompile libraries.wiremock
+}

@@ -1,0 +1,31 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+dependencies {
+    compile project(':thumty-image')
+    compile project(':thumty-loader')
+    compile project(':thumty-loader-http')
+    compile project(':thumty-loader-fs')
+    compile project(':thumty-image')
+    compile project(':thumty-store')
+    compile project(':thumty-cache')
+    compile project(':thumty-feature')
+    compile project(':thumty-filters')
+    compile project(':thumty-filters-common')
+
+    compile libraries.h2db
+    compile libraries.hsqldb
+    compile libraries.vertx_web
+    compile libraries.vertx_core
+
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
+}
+
+shadowJar {
+    classifier = ''
+    manifest {
+        attributes 'Main-Class': 'io.vertx.core.Launcher'
+        attributes 'Main-Verticle': 'org.eightlog.thumty.server.ThumtyApplication'
+    }
+}

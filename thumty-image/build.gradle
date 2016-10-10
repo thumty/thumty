@@ -1,0 +1,9 @@
+dependencies {
+    compile project(':thumty-common')
+
+    compile libraries.vertx_core
+    compile libraries.twelveMonkeys
+    compile libraries.jhlabs
+
+    testCompile libraries.vertx_unit
+}

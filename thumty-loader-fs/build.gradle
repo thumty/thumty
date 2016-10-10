@@ -1,0 +1,8 @@
+dependencies {
+    compile project(':thumty-common')
+    compile project(':thumty-loader')
+
+    compile libraries.vertx_core
+
+    testCompile libraries.vertx_unit
+}

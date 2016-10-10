@@ -1,0 +1,13 @@
+dependencies {
+    compile project(':thumty-common')
+
+    compile libraries.vertx_core
+    compile libraries.vertx_codegen
+    compile libraries.vertx_jdbc
+
+    compile libraries.tika
+
+    testCompile libraries.vertx_unit
+    testCompile libraries.h2db
+    testCompile libraries.hsqldb
+}

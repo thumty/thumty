@@ -1,0 +1,61 @@
+apply from: './libraries.gradle'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+subprojects {
+    group 'org.eightlog'
+    version '1.0.0'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    sourceSets {
+        main {
+            java {
+                srcDirs += 'src/main/generated'
+            }
+        }
+    }
+
+    dependencies {
+        compile "com.google.guava:guava:${libVersions.guava}"
+        compile "com.google.code.findbugs:jsr305:${libVersions.jsr305}"
+
+        testCompile libraries.unit_test
+
+        testCompile ("junit:junit:${libVersions.junit}") {
+            exclude group: 'org.hamcrest'
+        }
+
+        testCompile ("org.mockito:mockito-core:${libVersions.mockito}") {
+            exclude group: 'org.hamcrest'
+        }
+    }
+
+    task annotationProcessing(type: JavaCompile, group: 'build') { // codegen
+        source = sourceSets.main.java
+        classpath = configurations.compile
+        destinationDir = project.file('src/main/generated')
+        options.compilerArgs = [
+                "-proc:only",
+                "-processor", "io.vertx.codegen.CodeGenProcessor",
+                "-AoutputDirectory=${project.projectDir}/src/main"
+        ]
+    }
+
+}
+
