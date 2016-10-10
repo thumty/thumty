@@ -16,12 +16,9 @@ import org.eightlog.thumty.server.params.ThumbParams;
 import org.eightlog.thumty.server.params.ThumbParamsParser;
 import org.eightlog.thumty.store.ExpirableAttributedContent;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Iterator;
 
 import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
 
@@ -49,11 +46,6 @@ public class ThumtyApplication extends AbstractVerticle {
         thumbBuilder = ThumbBuilder.builder(vertx);
 
         DeploymentOptions featureDetectionDeploymentOptions = new DeploymentOptions().setConfig(config());
-
-        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("PNG");
-        while (readers.hasNext()) {
-            System.out.println("reader: " + readers.next());
-        }
 
         Handler<AsyncResult<HttpServer>> onServerStart = res -> {
             if (res.succeeded()) {
@@ -142,7 +134,7 @@ public class ThumtyApplication extends AbstractVerticle {
     }
 
     private String formatCacheControl(LocalDateTime time) {
-        LocalDateTime now  = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         if (time.isBefore(now)) {
             return "no-cache";
         } else {
