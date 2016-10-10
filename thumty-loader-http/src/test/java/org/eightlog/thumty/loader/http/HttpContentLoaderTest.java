@@ -65,7 +65,7 @@ public class HttpContentLoaderTest {
         HttpContentLoader loader = new HttpContentLoader(mock(Vertx.class), mock(ContentCache.class),
                 new JsonObject("{\n" +
                         "  \"hosts\": {\n" +
-                        "    \"reject\": \"*.example.com\"\n" +
+                        "    \"deny\": \"*.example.com\"\n" +
                         "  }\n" +
                         "}"));
 
@@ -82,7 +82,7 @@ public class HttpContentLoaderTest {
         HttpContentLoader loader = new HttpContentLoader(mock(Vertx.class), mock(ContentCache.class),
                 new JsonObject("{\n" +
                         "  \"hosts\": {\n" +
-                        "    \"reject\": [\"*.example.com\", \"example.com\"]\n" +
+                        "    \"deny\": [\"*.example.com\", \"example.com\"]\n" +
                         "  }\n" +
                         "}"));
 
