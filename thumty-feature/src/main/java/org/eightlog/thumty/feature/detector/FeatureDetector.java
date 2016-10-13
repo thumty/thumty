@@ -10,12 +10,20 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Image features detector interface
+ *
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
  */
 public interface FeatureDetector {
 
     FeatureDetector IDENTITY = (image) -> Collections.emptyList();
 
+    /**
+     * Build composite feature detector, which detects all features
+     *
+     * @param detectors the detectors
+     * @return a composite feature detector
+     */
     static FeatureDetector all(Iterable<FeatureDetector> detectors) {
         FeatureDetector composite = null;
 
@@ -34,6 +42,12 @@ public interface FeatureDetector {
         return all(Arrays.asList(detectors));
     }
 
+    /**
+     * Build composite feature detector, which detect first found features
+     *
+     * @param detectors the detectors
+     * @return a composite feature detector
+     */
     static FeatureDetector any(Iterable<FeatureDetector> detectors) {
         FeatureDetector composite = null;
 

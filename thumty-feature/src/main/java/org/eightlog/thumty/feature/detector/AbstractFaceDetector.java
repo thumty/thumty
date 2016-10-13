@@ -23,7 +23,7 @@ public abstract class AbstractFaceDetector extends CascadeClassifierDetector {
     private final EyeDetector eyeDetector;
 
     public AbstractFaceDetector(double weight) {
-        super(weight);
+        super(3, 1.1, Feature.FACE, weight);
         eyeDetector = new EyeDetector(weight / 2);
     }
 
@@ -64,20 +64,5 @@ public abstract class AbstractFaceDetector extends CascadeClassifierDetector {
     protected Size getMinSize(int width, int height) {
         int size = Math.max(Math.min(width, height) / 15, 20);
         return new Size(size, size);
-    }
-
-    @Override
-    protected double getScaleFactor() {
-        return 1.2;
-    }
-
-    @Override
-    protected int getMinNeighbors() {
-        return 3;
-    }
-
-    @Override
-    protected int getFeatureType() {
-        return Feature.FACE;
     }
 }

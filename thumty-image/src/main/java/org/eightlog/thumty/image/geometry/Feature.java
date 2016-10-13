@@ -132,6 +132,15 @@ public class Feature implements Comparable<Feature>, Serializable {
     }
 
     @Override
+    public String toString() {
+        return "Feature{" +
+                "shape=" + shape +
+                ", weight=" + weight +
+                ", type=" + type +
+                '}';
+    }
+
+    @Override
     public int compareTo(Feature o) {
         return shape.y == o.shape.y ? shape.x - o.shape.x : shape.y - o.shape.y;
     }

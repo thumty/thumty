@@ -16,10 +16,11 @@ public class EyeDetector extends CascadeClassifierDetector {
     private final CascadeClassifier classifier;
 
     public EyeDetector(double weight) {
-        super(weight);
+        super(3, 1.2, Feature.EYE, weight);
 
         try {
-            File xml = Loader.extractResource(EyeDetector.class, "/haarcascade_eye.xml", Files.createTempDir(), "classified", ".xml");
+            File xml = Loader.extractResource(EyeDetector.class, "/haarcascade_eye.xml",
+                    Files.createTempDir(), "classified", ".xml");
             xml.deleteOnExit();
 
             classifier = new CascadeClassifier();
@@ -38,10 +39,5 @@ public class EyeDetector extends CascadeClassifierDetector {
     protected void finalize() throws Throwable {
         super.finalize();
         classifier.close();
-    }
-
-    @Override
-    protected int getFeatureType() {
-        return Feature.EYE;
     }
 }

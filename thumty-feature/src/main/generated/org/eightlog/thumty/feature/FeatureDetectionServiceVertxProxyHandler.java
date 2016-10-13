@@ -108,36 +108,8 @@ public class FeatureDetectionServiceVertxProxyHandler extends ProxyHandler {
       switch (action) {
 
 
-        case "detectAny": {
-          service.detectAny((java.lang.String)json.getValue("resource"), res -> {
-            if (res.failed()) {
-              if (res.cause() instanceof ServiceException) {
-                msg.reply(res.cause());
-              } else {
-                msg.reply(new ServiceException(-1, res.cause().getMessage()));
-              }
-            } else {
-              msg.reply(res.result() == null ? null : res.result().toJson());
-            }
-         });
-          break;
-        }
-        case "detectAll": {
-          service.detectAll((java.lang.String)json.getValue("resource"), res -> {
-            if (res.failed()) {
-              if (res.cause() instanceof ServiceException) {
-                msg.reply(res.cause());
-              } else {
-                msg.reply(new ServiceException(-1, res.cause().getMessage()));
-              }
-            } else {
-              msg.reply(res.result() == null ? null : res.result().toJson());
-            }
-         });
-          break;
-        }
-        case "detectFace": {
-          service.detectFace((java.lang.String)json.getValue("resource"), res -> {
+        case "detect": {
+          service.detect((java.lang.String)json.getValue("resource"), json.getString("target") == null ? null : org.eightlog.thumty.feature.DetectionTarget.valueOf(json.getString("target")), res -> {
             if (res.failed()) {
               if (res.cause() instanceof ServiceException) {
                 msg.reply(res.cause());

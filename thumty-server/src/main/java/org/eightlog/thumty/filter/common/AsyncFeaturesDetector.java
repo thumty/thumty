@@ -2,6 +2,7 @@ package org.eightlog.thumty.filter.common;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import org.eightlog.thumty.feature.DetectionTarget;
 import org.eightlog.thumty.feature.FeatureDetectionService;
 import org.eightlog.thumty.feature.Features;
 import org.eightlog.thumty.filter.AsyncFilter;
@@ -16,15 +17,10 @@ import java.awt.image.BufferedImage;
  */
 public class AsyncFeaturesDetector implements AsyncFilter {
 
-    public final static int ALL = 0;
-    public final static int ANY = 1;
-    public final static int FACE = 2;
-
     private final FeatureDetectionService detector;
     private final String resource;
     private final ThumbAlign align;
     private final ThumbResize resize;
-
 
     public AsyncFeaturesDetector(Vertx vertx, String resource, ThumbAlign align, ThumbResize resize) {
         this.detector = FeatureDetectionService.createProxy(vertx, FeatureDetectionService.FEATURE_DETECTOR_ADDRESS);
@@ -40,10 +36,10 @@ public class AsyncFeaturesDetector implements AsyncFilter {
         if (align != null && (resize == null || resize == ThumbResize.FILL)) {
             switch (align.getType()) {
                 case FACE:
-                    detector.detectFace(resource, future.completer());
+                    detector.detect(resource, DetectionTarget.FACE, future.completer());
                     break;
                 case AUTO:
-                    detector.detectAll(resource, future.completer());
+                    detector.detect(resource, DetectionTarget.ALL, future.completer());
                     break;
                 default:
                     future.complete(new Features());

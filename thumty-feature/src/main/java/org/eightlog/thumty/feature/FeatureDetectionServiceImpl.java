@@ -70,34 +70,37 @@ public class FeatureDetectionServiceImpl implements FeatureDetectionService {
     }
 
     @Override
-    public void detectAny(String resource, Handler<AsyncResult<Features>> handler) {
-        detect(resource, "any", anyDetector).setHandler(handler);
+    public void detect(String resource, DetectionTarget target, Handler<AsyncResult<Features>> handler) {
+        detect(resource, target).setHandler(handler);
     }
 
-    @Override
-    public void detectAll(String resource, Handler<AsyncResult<Features>> handler) {
-        detect(resource, "all", allDetector).setHandler(handler);
-    }
-
-    @Override
-    public void detectFace(String resource, Handler<AsyncResult<Features>> handler) {
-        detect(resource, "face", faceDetector).setHandler(handler);
-    }
-
-    private Future<Features> detect(String resource, String detectorId, FeatureDetector detector) {
-        String cacheKey = detectorId + "/" + resource;
+    private Future<Features> detect(String resource, DetectionTarget target) {
+        String cacheKey = target + "/" + resource;
 
         return cache.getIfPresent(cacheKey).compose(features -> {
+            FeatureDetector detector;
+
+            switch (target) {
+                case FACE:
+                    detector = faceDetector;
+                    break;
+                case ANY:
+                    detector = anyDetector;
+                    break;
+                default:
+                    detector = allDetector;
+            }
+
             if (features == null) {
-                return detectUncached(resource, detectorId, detector);
+                return detectUncached(resource, target, detector);
             } else {
                 return Future.succeededFuture(features);
             }
         });
     }
 
-    private Future<Features> detectUncached(String resource, String detectorId, FeatureDetector detector) {
-        String cacheKey = detectorId + "/" + resource;
+    private Future<Features> detectUncached(String resource, DetectionTarget target, FeatureDetector detector) {
+        String cacheKey = target + "/" + resource;
 
         return loaders.getLoader(resource)
                 .load(resource)

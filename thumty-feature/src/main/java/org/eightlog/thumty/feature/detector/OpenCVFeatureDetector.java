@@ -14,6 +14,8 @@ import java.util.List;
 import static org.bytedeco.javacpp.opencv_core.*;
 
 /**
+ * Base OpenCV feature detector
+ *
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
  */
 public abstract class OpenCVFeatureDetector implements FeatureDetector {
@@ -58,6 +60,12 @@ public abstract class OpenCVFeatureDetector implements FeatureDetector {
         return result;
     }
 
+    /**
+     * Stack OpenCV detectors
+     *
+     * @param after the feature detector
+     * @return a composite feature detector
+     */
     @Override
     public FeatureDetector andThen(FeatureDetector after) {
         if (after instanceof OpenCVFeatureDetector) {
@@ -75,6 +83,12 @@ public abstract class OpenCVFeatureDetector implements FeatureDetector {
         return (image) -> ImmutableList.<Feature>builder().addAll(detect(image)).addAll(after.detect(image)).build();
     }
 
+    /**
+     * Stack OpenCV detectors
+     *
+     * @param after the feature detector
+     * @return a composite feature detector
+     */
     @Override
     public FeatureDetector andThenIfNotDetected(FeatureDetector after) {
         if (after instanceof OpenCVFeatureDetector) {
