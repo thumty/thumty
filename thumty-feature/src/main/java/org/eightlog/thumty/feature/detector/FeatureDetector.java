@@ -1,10 +1,12 @@
 package org.eightlog.thumty.feature.detector;
 
-import org.eightlog.thumty.feature.Features;
+import com.google.common.collect.ImmutableList;
+import org.eightlog.thumty.image.geometry.Feature;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -12,7 +14,7 @@ import java.util.Objects;
  */
 public interface FeatureDetector {
 
-    FeatureDetector IDENTITY = (image) -> new Features(image, Collections.emptyList());
+    FeatureDetector IDENTITY = (image) -> Collections.emptyList();
 
     static FeatureDetector all(Iterable<FeatureDetector> detectors) {
         FeatureDetector composite = null;
@@ -56,19 +58,19 @@ public interface FeatureDetector {
      * @param image the image
      * @return an image features
      */
-    Features detect(BufferedImage image);
+    List<Feature> detect(BufferedImage image);
 
     default FeatureDetector andThenIfNotDetected(FeatureDetector after) {
         Objects.requireNonNull(after);
 
         return image -> {
-            Features features = detect(image);
+            List<Feature> features = detect(image);
             return !features.isEmpty() ? features : after.detect(image);
         };
     }
 
     default FeatureDetector andThen(FeatureDetector after) {
         Objects.requireNonNull(after);
-        return (image) -> detect(image).compose(after.detect(image));
+        return (image) -> ImmutableList.<Feature>builder().addAll(detect(image)).addAll(after.detect(image)).build();
     }
 }

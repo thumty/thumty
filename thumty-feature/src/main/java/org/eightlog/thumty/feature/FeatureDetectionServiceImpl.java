@@ -14,12 +14,13 @@ import org.eightlog.thumty.feature.detector.CommonFeatureDetector;
 import org.eightlog.thumty.feature.detector.FeatureDetector;
 import org.eightlog.thumty.feature.detector.FrontFaceDetector;
 import org.eightlog.thumty.feature.detector.ProfileFaceDetector;
-import org.eightlog.thumty.image.io.Image;
+import org.eightlog.thumty.image.Image;
 import org.eightlog.thumty.image.io.InputStreamImageInput;
 import org.eightlog.thumty.image.io.UnsupportedFormatException;
 import org.eightlog.thumty.image.io.sampler.SizeSampler;
 import org.eightlog.thumty.loader.Loaders;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
@@ -111,8 +112,10 @@ public class FeatureDetectionServiceImpl implements FeatureDetectionService {
         vertx.executeBlocking(result -> {
             try {
                 try (InputStream input = new ReadStreamInputStream(stream, READ_STREAM_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                    Image source = new InputStreamImageInput(new SizeSampler(options.getResize())).read(input);
-                    result.complete(detector.detect(source.getBufferedImage()));
+                    Image image = new InputStreamImageInput(new SizeSampler(options.getResize())).read(input);
+                    BufferedImage source = image.getSource();
+
+                    result.complete(new Features(source, detector.detect(source)));
                 } catch (IOException | UnsupportedFormatException e) {
                     result.fail(e);
                 }

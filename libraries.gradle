@@ -16,7 +16,8 @@ ext {
             h2db4        : '1.4.192',
             hsqldb       : '2.3.4',
             twelveMonkeys: '3.2.1',
-            jhlabs       : '2.0.235-1'
+            jhlabs       : '2.0.235-1',
+            batik        : '1.8'
     ]
 
     //noinspection GroovyAssignabilityCheck
@@ -54,9 +55,11 @@ ext {
                     "com.twelvemonkeys.imageio:imageio-pcx:${libVersions.twelveMonkeys}",
                     "com.twelvemonkeys.imageio:imageio-iff:${libVersions.twelveMonkeys}",
                     "com.twelvemonkeys.imageio:imageio-metadata:${libVersions.twelveMonkeys}",
+                    "com.twelvemonkeys.imageio:imageio-hdr:${libVersions.twelveMonkeys}",
             ],
 
             jhlabs             : "com.jhlabs:filters:${libVersions.jhlabs}"
+
 
     ]
 }

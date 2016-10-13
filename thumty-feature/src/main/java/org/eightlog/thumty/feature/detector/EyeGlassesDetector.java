@@ -2,6 +2,7 @@ package org.eightlog.thumty.feature.detector;
 
 import com.google.common.io.Files;
 import org.bytedeco.javacpp.Loader;
+import org.eightlog.thumty.image.geometry.Feature;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,5 +38,10 @@ public class EyeGlassesDetector extends CascadeClassifierDetector {
     protected void finalize() throws Throwable {
         super.finalize();
         classifier.close();
+    }
+
+    @Override
+    protected int getFeatureType() {
+        return Feature.EYE;
     }
 }

@@ -1,6 +1,0 @@
-org.eightlog.thumty.filters.common.BlurFilterProvider
-org.eightlog.thumty.filters.common.SolarizeFilterProvider
-org.eightlog.thumty.filters.common.QualityFilterProvider
-org.eightlog.thumty.filters.common.FormatFilterProvider
-org.eightlog.thumty.filters.common.GrayscaleFilterProvider
-org.eightlog.thumty.filters.common.SepiaFilterProvider

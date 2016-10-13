@@ -1,5 +1,0 @@
-dependencies {
-    compile project(':thumty-image')
-
-    compile libraries.vertx_core
-}

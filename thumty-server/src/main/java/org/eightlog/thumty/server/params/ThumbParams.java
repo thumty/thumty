@@ -1,6 +1,8 @@
 package org.eightlog.thumty.server.params;
 
 import com.google.common.base.Joiner;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -152,4 +154,42 @@ public class ThumbParams {
         return Joiner.on("/").join(parts);
     }
 
+    public static ThumbParams fromJson(JsonObject json) {
+        ThumbParams params = new ThumbParams();
+
+        if (ThumbTrim.canParse("trim:" + json.getString("trim", ""))) {
+            params.setTrim(ThumbTrim.parse("trim:" + json.getString("trim", "")));
+        }
+
+        if (ThumbCrop.canParse(json.getString("crop", ""))) {
+            params.setCrop(ThumbCrop.parse(json.getString("crop", "")));
+        }
+
+        if (ThumbResize.canParse(json.getString("resize", ""))) {
+            params.setResize(ThumbResize.parse(json.getString("resize", "")));
+        }
+
+        if (ThumbSize.canParse(json.getString("size", ""))) {
+            params.setSize(ThumbSize.parse(json.getString("size", "")));
+        }
+
+        if (ThumbAlign.canParse(json.getString("align", ""))) {
+            params.setAlign(ThumbAlign.parse(json.getString("align", "")));
+        }
+
+        List<ThumbFilter> filters = new ArrayList<>();
+
+        JsonArray array = json.getJsonArray("filters", new JsonArray());
+
+        for (int i = 0; i < array.size(); i++) {
+            String description = array.getString(i);
+            if (description != null && ThumbFilter.canParse(description)) {
+                filters.add(ThumbFilter.parse(description));
+            }
+        }
+
+        params.setFilters(new ThumbFilters(filters));
+
+        return  params;
+    }
 }

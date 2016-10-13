@@ -1,8 +1,6 @@
 package org.eightlog.thumty.image.io;
 
-import org.eightlog.thumty.image.exif.ExifFilterUtils;
-import org.eightlog.thumty.image.exif.ExifUtils;
-import org.eightlog.thumty.image.exif.Orientation;
+import org.eightlog.thumty.image.Image;
 import org.eightlog.thumty.image.io.sampler.ImageSampler;
 
 import javax.imageio.ImageIO;
@@ -41,7 +39,7 @@ public abstract class AbstractImageInput<T> implements ImageInput<T> {
             ImageReader reader = readers.next();
             reader.setInput(input);
 
-            Orientation orientation = ExifUtils.getExifOrientation(reader, FIRST_IMAGE_INDEX);
+//            Orientation orientation = ExifUtils.getExifOrientation(reader, FIRST_IMAGE_INDEX);
 
             // Read default params
             ImageReadParam param = reader.getDefaultReadParam();
@@ -56,7 +54,8 @@ public abstract class AbstractImageInput<T> implements ImageInput<T> {
 
             reader.dispose();
 
-            return new Image(ExifFilterUtils.getFilterForOrientation(orientation).apply(source), reader.getFormatName());
+            return new Image(source, reader.getFormatName());
+//            return new Image(ExifFilterUtils.getFilterForOrientation(orientation).apply(source), reader.getFormatName());
         }
     }
 }

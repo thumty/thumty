@@ -23,15 +23,15 @@ public class ThumbFiltersTest {
 
     @Test
     public void shouldParse() throws Exception {
-        assertThat(ThumbFilters.parse("filters:")).isEqualTo(new ThumbFilters(Collections.emptyMap()));
-        assertThat(ThumbFilters.parse("filters:filter")).isEqualTo(new ThumbFilters(Collections.singletonMap("filter", new ThumbFilter("filter"))));
-        assertThat(ThumbFilters.parse("filters:filter(argument):")).isEqualTo(new ThumbFilters(Collections.singletonMap("filter", new ThumbFilter("filter", Collections.singletonList("argument")))));
+        assertThat(ThumbFilters.parse("filters:")).isEqualTo(new ThumbFilters(Collections.emptyList()));
+        assertThat(ThumbFilters.parse("filters:filter")).isEqualTo(new ThumbFilters(Collections.singletonList(new ThumbFilter("filter"))));
+        assertThat(ThumbFilters.parse("filters:filter(argument):")).isEqualTo(new ThumbFilters(Collections.singletonList(new ThumbFilter("filter", Collections.singletonList("argument")))));
     }
 
     @Test
     public void shouldFormat() throws Exception {
-        assertThat(new ThumbFilters(Collections.emptyMap()).toString()).isEqualTo("filters:");
-        assertThat(new ThumbFilters(Collections.singletonMap("filter", new ThumbFilter("filter"))).toString()).isEqualTo("filters:filter()");
-        assertThat(new ThumbFilters(Collections.singletonMap("filter", new ThumbFilter("filter", Collections.singletonList("argument")))).toString()).isEqualTo("filters:filter(argument)");
+        assertThat(new ThumbFilters(Collections.emptyList()).toString()).isEqualTo("filters:");
+        assertThat(new ThumbFilters(Collections.singletonList(new ThumbFilter("filter"))).toString()).isEqualTo("filters:filter()");
+        assertThat(new ThumbFilters(Collections.singletonList(new ThumbFilter("filter", Collections.singletonList("argument")))).toString()).isEqualTo("filters:filter(argument)");
     }
 }

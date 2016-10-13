@@ -76,6 +76,24 @@
     }
   },
 
+  "variants" : {
+    "thumb": {
+      "size": "200x200",
+      "align": "auto",
+
+      "filters": [
+        "blur(1)",
+        "sepia(1)",
+        "gray"
+      ]
+    },
+
+    "enlarged" : {
+      "size": "1024x1024",
+      "resize": "fit-in"
+    }
+  },
+
   // Cache configuration
   "cache" : {
     "type": "local",

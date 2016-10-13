@@ -1,8 +1,8 @@
 package org.eightlog.thumty.image.exif;
 
-import org.eightlog.thumty.image.operations.Flip;
-import org.eightlog.thumty.image.operations.ImageOp;
-import org.eightlog.thumty.image.operations.Rotation;
+import org.eightlog.thumty.image.filter.Flip;
+import org.eightlog.thumty.image.filter.ImageFilter;
+import org.eightlog.thumty.image.filter.Rotate;
 
 /**
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
@@ -15,23 +15,23 @@ public class ExifFilterUtils {
      * @param orientation the orientation
      * @return a filter
      */
-    public static ImageOp getFilterForOrientation(Orientation orientation) {
-        ImageOp filter = ImageOp.IDENTITY;
+    public static ImageFilter getFilterForOrientation(Orientation orientation) {
+        ImageFilter filter = ImageFilter.IDENTITY;
 
         if (orientation == Orientation.TOP_RIGHT) {
             filter = Flip.HORIZONTAL;
         } else if (orientation == Orientation.BOTTOM_RIGHT) {
-            filter = Rotation.ROTATE_180;
+            filter = Rotate.ROTATE_180;
         } else if (orientation == Orientation.BOTTOM_LEFT) {
-            filter = Rotation.ROTATE_180.andThen(Flip.HORIZONTAL);
+            filter = Rotate.ROTATE_180.andThen(Flip.HORIZONTAL);
         } else if (orientation == Orientation.LEFT_TOP) {
-            filter = Rotation.ROTATE_RIGHT_90.andThen(Flip.HORIZONTAL);
+            filter = Rotate.ROTATE_RIGHT_90.andThen(Flip.HORIZONTAL);
         } else if (orientation == Orientation.RIGHT_TOP) {
-            filter = Rotation.ROTATE_RIGHT_90;
+            filter = Rotate.ROTATE_RIGHT_90;
         } else if (orientation == Orientation.RIGHT_BOTTOM) {
-            filter = Rotation.ROTATE_LEFT_90.andThen(Flip.HORIZONTAL);
+            filter = Rotate.ROTATE_LEFT_90.andThen(Flip.HORIZONTAL);
         } else if (orientation == Orientation.LEFT_BOTTOM) {
-            filter = Rotation.ROTATE_LEFT_90;
+            filter = Rotate.ROTATE_LEFT_90;
         }
 
         return filter;

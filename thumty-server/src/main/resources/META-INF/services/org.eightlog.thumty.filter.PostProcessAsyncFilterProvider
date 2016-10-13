@@ -1,0 +1,13 @@
+org.eightlog.thumty.filter.provider.BlurFilterProvider
+org.eightlog.thumty.filter.provider.BrightnessFilterProvider
+org.eightlog.thumty.filter.provider.SolarizeFilterProvider
+org.eightlog.thumty.filter.provider.QualityFilterProvider
+org.eightlog.thumty.filter.provider.FormatFilterProvider
+org.eightlog.thumty.filter.provider.GrayscaleFilterProvider
+org.eightlog.thumty.filter.provider.SepiaFilterProvider
+org.eightlog.thumty.filter.provider.SaturationFilterProvider
+org.eightlog.thumty.filter.provider.SharpenFilterProvider
+org.eightlog.thumty.filter.provider.EqualizeFilterProvider
+org.eightlog.thumty.filter.provider.ContrastFilterProvider
+org.eightlog.thumty.filter.provider.NoiseFilterProvider
+org.eightlog.thumty.filter.provider.RGBAdjustFilterProvider

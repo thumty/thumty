@@ -40,7 +40,7 @@ public class RelativeOrAbsoluteSize implements Size {
         } else if (this.width > 0 && this.width < 1) {
             w = (int) (this.width * width);
         } else {
-            w = height;
+            w = width;
         }
 
         return new Dimension(w, h);
