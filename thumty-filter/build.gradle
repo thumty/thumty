@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':thumty-image')
+    compile project(':thumty-feature')
+
+    compile libraries.vertx_core
+}

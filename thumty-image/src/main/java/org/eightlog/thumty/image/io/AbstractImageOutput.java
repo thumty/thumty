@@ -54,7 +54,6 @@ public abstract class AbstractImageOutput implements ImageOutput {
         }
 
         try (ImageOutputStream os = getImageOutputStream()) {
-
             if (format.equalsIgnoreCase("jpg")
                     || format.equalsIgnoreCase("jpeg")
                     || format.equalsIgnoreCase("bmp")) {

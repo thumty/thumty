@@ -3,16 +3,15 @@ package org.eightlog.thumty.feature.detector;
 import com.google.common.collect.ImmutableList;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
-import org.eightlog.thumty.feature.FeatureRegion;
-import org.eightlog.thumty.feature.Features;
+import org.eightlog.thumty.image.geometry.Feature;
 import org.eightlog.thumty.image.utils.BufferedImages;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
 
-import static org.bytedeco.javacpp.opencv_core.CV_8UC1;
-import static org.bytedeco.javacpp.opencv_core.Mat;
+import static org.bytedeco.javacpp.opencv_core.*;
 
 /**
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
@@ -24,16 +23,25 @@ public abstract class OpenCVFeatureDetector implements FeatureDetector {
     }
 
     @Override
-    public Features detect(BufferedImage image) {
+    public List<Feature> detect(BufferedImage image) {
         Mat source = fromBufferedImage(image);
         try {
-            return new Features(image, detect(source));
+            return detect(source);
         } finally {
             source.release();
         }
     }
 
-    protected abstract List<FeatureRegion> detect(Mat image);
+    protected abstract List<Feature> detect(Mat image);
+
+    protected List<Feature> detect(Mat image, Rectangle rectangle) {
+        Mat sub = new Mat(image, new Rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
+
+        List<Feature> features = detect(sub);
+        features.forEach(f -> f.getShape().translate(rectangle.x, rectangle.y));
+
+        return features;
+    }
 
     private Mat fromBufferedImage(BufferedImage image) {
         if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
@@ -58,13 +66,13 @@ public abstract class OpenCVFeatureDetector implements FeatureDetector {
 
             return new OpenCVFeatureDetector() {
                 @Override
-                protected List<FeatureRegion> detect(Mat image) {
-                    return ImmutableList.<FeatureRegion>builder().addAll(self.detect(image)).addAll(cvAfter.detect(image)).build();
+                protected List<Feature> detect(Mat image) {
+                    return ImmutableList.<Feature>builder().addAll(self.detect(image)).addAll(cvAfter.detect(image)).build();
                 }
             };
         }
 
-        return (image) -> detect(image).compose(after.detect(image));
+        return (image) -> ImmutableList.<Feature>builder().addAll(detect(image)).addAll(after.detect(image)).build();
     }
 
     @Override
@@ -75,15 +83,15 @@ public abstract class OpenCVFeatureDetector implements FeatureDetector {
 
             return new OpenCVFeatureDetector() {
                 @Override
-                protected List<FeatureRegion> detect(Mat image) {
-                    List<FeatureRegion> regions = self.detect(image);
+                protected List<Feature> detect(Mat image) {
+                    List<Feature> regions = self.detect(image);
                     return !regions.isEmpty() ? regions : cvAfter.detect(image);
                 }
             };
         }
 
         return image -> {
-            Features features = detect(image);
+            List<Feature> features = detect(image);
             return !features.isEmpty() ? features : after.detect(image);
         };
     }

@@ -11,7 +11,7 @@ import static org.bytedeco.javacpp.opencv_objdetect.CascadeClassifier;
 /**
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
  */
-public class ProfileFaceDetector extends CascadeClassifierDetector {
+public class ProfileFaceDetector extends AbstractFaceDetector {
 
     private final CascadeClassifier classifier;
 

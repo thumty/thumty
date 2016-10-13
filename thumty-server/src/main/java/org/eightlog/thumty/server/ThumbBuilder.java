@@ -11,7 +11,12 @@ import org.eightlog.thumty.cache.ContentCache;
 import org.eightlog.thumty.common.stream.PipeStream;
 import org.eightlog.thumty.common.stream.ReadStreamInputStream;
 import org.eightlog.thumty.common.stream.WriteStreamOutputStream;
-import org.eightlog.thumty.image.io.*;
+import org.eightlog.thumty.filter.common.AsyncThumbBuilder;
+import org.eightlog.thumty.image.Image;
+import org.eightlog.thumty.image.io.ImageOutput;
+import org.eightlog.thumty.image.io.InputStreamImageInput;
+import org.eightlog.thumty.image.io.OutputStreamImageOutput;
+import org.eightlog.thumty.image.io.UnsupportedFormatException;
 import org.eightlog.thumty.image.io.sampler.DefaultSampler;
 import org.eightlog.thumty.image.io.sampler.ImageSampler;
 import org.eightlog.thumty.image.io.sampler.X2Sampler;
@@ -113,7 +118,7 @@ public class ThumbBuilder {
 
     private Future<Void> build(ReadStream<Buffer> input, WriteStream<Buffer> output, ThumbParams params) {
         return read(input, params)
-                .compose(image -> new ParametrizedThumbBuilder(vertx, params).apply(image))
+                .compose(image -> new AsyncThumbBuilder(vertx, params).apply(image))
                 .compose(image -> write(output, image));
     }
 
@@ -135,7 +140,7 @@ public class ThumbBuilder {
                 float quality = getWriteQuality(image);
                 String format = getWriteFormat(writer, image);
 
-                new OutputStreamImageOutput(output).write(image.getBufferedImage(), format, quality);
+                new OutputStreamImageOutput(output).write(image.getSource(), format, quality);
                 result.complete();
             } catch (IOException | UnsupportedFormatException e) {
                 result.fail(e);
@@ -194,20 +199,19 @@ public class ThumbBuilder {
         return new DefaultSampler();
     }
 
-
     private float getWriteQuality(Image image) {
-        return image.getQuality() == 0 ? options.getQuality() : image.getQuality();
+        return Float.isNaN(image.getQuality()) ? options.getQuality() : image.getQuality();
     }
 
     private String getWriteFormat(ImageOutput writer, Image image) {
         String format = image.getFormat();
 
         if (!options.isSupportedFormat(format)) {
-            format = getOutputFormat(image.getBufferedImage());
+            format = getOutputFormat(image.getSource());
         }
 
-        if (writer.isWriteSupported(format)) {
-            format = getOutputFormat(image.getBufferedImage());
+        if (!writer.isSupportedFormat(format)) {
+            format = getOutputFormat(image.getSource());
         }
 
         return format;

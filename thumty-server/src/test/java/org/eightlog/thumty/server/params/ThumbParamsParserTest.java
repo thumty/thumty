@@ -103,9 +103,9 @@ public class ThumbParamsParserTest {
         assertThat(ThumbParamsParser.parse("secret", "/trim/100x100:200x200/fit-in/").getFilters()).isNull();
         assertThat(ThumbParamsParser.parse("secret", "/trim/100x100:200x200/fit-in/100x200/").getFilters()).isNull();
 
-        assertThat(ThumbParamsParser.parse("secret", "/filters:some(arg, arg2, arg3):another(arg)").getFilters().getFilters().get("some").getArguments()).contains("arg", "arg2", "arg3");
-        assertThat(ThumbParamsParser.parse("secret", "/filters:some(arg, arg2, arg3):another(arg)").getFilters().getFilters().get("another").getArguments()).contains("arg");
-        assertThat(ThumbParamsParser.parse("secret", "/filters:noargs").getFilters().getFilters().get("noargs").getArguments()).isEmpty();
+        assertThat(ThumbParamsParser.parse("secret", "/filters:some(arg, arg2, arg3):another(arg)").getFilters().getFilters().get(0).getArguments()).contains("arg", "arg2", "arg3");
+        assertThat(ThumbParamsParser.parse("secret", "/filters:some(arg, arg2, arg3):another(arg)").getFilters().getFilters().get(1).getArguments()).contains("arg");
+        assertThat(ThumbParamsParser.parse("secret", "/filters:noargs").getFilters().getFilters().get(0).getArguments()).isEmpty();
     }
 
     @Test

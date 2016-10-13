@@ -11,8 +11,7 @@ dependencies {
     compile project(':thumty-store')
     compile project(':thumty-cache')
     compile project(':thumty-feature')
-    compile project(':thumty-filters')
-    compile project(':thumty-filters-common')
+    compile project(':thumty-filter')
 
     compile libraries.h2db
     compile libraries.hsqldb
@@ -26,6 +25,6 @@ shadowJar {
     classifier = ''
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
-        attributes 'Main-Verticle': 'org.eightlog.thumty.server.ThumtyApplication'
+        attributes 'Main-Verticle': 'org.eightlog.thumty.server.Thumty'
     }
 }

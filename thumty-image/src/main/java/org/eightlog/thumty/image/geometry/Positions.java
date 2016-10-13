@@ -1,7 +1,7 @@
 package org.eightlog.thumty.image.geometry;
 
-import org.eightlog.thumty.image.operations.ImageOp;
-import org.eightlog.thumty.image.operations.Watermark;
+import org.eightlog.thumty.image.filter.ImageFilter;
+import org.eightlog.thumty.image.filter.Watermark;
 
 import java.awt.*;
 
@@ -10,7 +10,7 @@ import java.awt.*;
  * <p>
  * Primary use of this enum is for selecting a position to place watermarks
  * (using the {@link Watermark} class)
- * class) and other {@link ImageOp}s.
+ * class) and other {@link ImageFilter}s.
  * 
  * @author coobird
  *

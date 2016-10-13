@@ -1,5 +1,7 @@
 package org.eightlog.thumty.image.io;
 
+import org.eightlog.thumty.image.Image;
+
 import java.io.IOException;
 
 /**

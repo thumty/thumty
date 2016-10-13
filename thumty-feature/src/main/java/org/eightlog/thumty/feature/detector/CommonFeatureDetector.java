@@ -1,8 +1,9 @@
 package org.eightlog.thumty.feature.detector;
 
 import org.bytedeco.javacpp.indexer.FloatRawIndexer;
-import org.eightlog.thumty.feature.FeatureRegion;
+import org.eightlog.thumty.image.geometry.Feature;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class CommonFeatureDetector extends OpenCVFeatureDetector {
     }
 
     @Override
-    protected List<FeatureRegion> detect(Mat image) {
-        List<FeatureRegion> result = new ArrayList<>();
+    protected List<Feature> detect(Mat image) {
+        List<Feature> result = new ArrayList<>();
 
         Mat corners = new Mat();
 
@@ -34,10 +35,10 @@ public class CommonFeatureDetector extends OpenCVFeatureDetector {
             long size = indexer.rows() * indexer.cols();
 
             for (long i = 0; i < size; i++) {
-                int x = (int)indexer.get(i);
-                int y = (int)indexer.get(i + 1);
+                int x = (int) indexer.get(i);
+                int y = (int) indexer.get(i + 1);
 
-                result.add(new FeatureRegion(x, y, 1, 1, weight));
+                result.add(new Feature(new Rectangle(x, y, 1, 1), weight, Feature.COMMON));
             }
 
             return result;

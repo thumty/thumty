@@ -1,7 +1,8 @@
 package org.eightlog.thumty.feature.detector;
 
-import org.eightlog.thumty.feature.FeatureRegion;
+import org.eightlog.thumty.image.geometry.Feature;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,19 +23,19 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
     }
 
     @Override
-    protected List<FeatureRegion> detect(Mat image) {
-        List<FeatureRegion> results = new ArrayList<>();
+    protected List<Feature> detect(Mat image) {
+        List<Feature> results = new ArrayList<>();
         RectVector detected = new RectVector();
 
         try {
             getClassifier().detectMultiScale(image, detected, getScaleFactor(), getMinNeighbors(),
-                    CV_HAAR_SCALE_IMAGE
+                    CV_HAAR_DO_CANNY_PRUNING | CV_HAAR_SCALE_IMAGE
                             | CV_HAAR_FIND_BIGGEST_OBJECT
                             | CV_HAAR_DO_ROUGH_SEARCH, getMinSize(image.cols(), image.rows()), getMaxSize(image.cols(), image.rows()));
 
             for (long i = 0; i < detected.size(); i++) {
                 Rect rect = detected.get(i);
-                results.add(new FeatureRegion(rect.x(), rect.y(), rect.width(), rect.height(), weight));
+                results.add(new Feature(new Rectangle(rect.x(), rect.y(), rect.width(), rect.height()), weight, getFeatureType()));
             }
 
         } finally {
@@ -55,10 +56,14 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
     }
 
     protected int getMinNeighbors() {
-        return 3;
+        return 4;
     }
 
     protected double getScaleFactor() {
         return 1.2;
+    }
+
+    protected int getFeatureType() {
+        return Feature.COMMON;
     }
 }

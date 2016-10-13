@@ -18,7 +18,7 @@ public class RelativeOrAbsoluteCoordinate implements Coordinate {
     @Override
     public Point getPoint(int width, int height) {
         int xR = x < 0 || x > 1 ? (int)x : (int)(x * width);
-        int yR = y < 0 || y > 1 ? (int)y : (int)(y * width);
+        int yR = y < 0 || y > 1 ? (int)y : (int)(y * height);
 
         return new Point(xR, yR);
     }

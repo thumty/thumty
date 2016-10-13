@@ -3,22 +3,22 @@ package org.eightlog.thumty.server.params;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * @author Iliya Grushevskiy <iliya.gr@gmail.com>
  */
-public class ThumbFilters {
+public class ThumbFilters implements Iterable<ThumbFilter> {
 
     private final static String PREFIX = "filters:";
 
-    private final Map<String, ThumbFilter> filters;
+    private final List<ThumbFilter> filters;
 
-    public ThumbFilters(Map<String, ThumbFilter> filters) {
+    public ThumbFilters(List<ThumbFilter> filters) {
         this.filters = filters;
     }
 
@@ -28,15 +28,14 @@ public class ThumbFilters {
 
     public static ThumbFilters parse(String text) {
         if (canParse(text)) {
-            Map<String, ThumbFilter> filters = new HashMap<>();
+            List<ThumbFilter> filters = new ArrayList<>();
 
             String allFilters = text.substring(PREFIX.length());
             List<String> declarations = Splitter.on(":").trimResults().omitEmptyStrings().splitToList(allFilters);
 
             for (String declaration : declarations) {
                 if (ThumbFilter.canParse(declaration)) {
-                    ThumbFilter filter = ThumbFilter.parse(declaration);
-                    filters.put(filter.getName(), filter);
+                    filters.add(ThumbFilter.parse(declaration));
                 }
             }
 
@@ -46,7 +45,7 @@ public class ThumbFilters {
         throw new IllegalArgumentException("Invalid filters format");
     }
 
-    public Map<String, ThumbFilter> getFilters() {
+    public List<ThumbFilter> getFilters() {
         return filters;
     }
 
@@ -65,6 +64,11 @@ public class ThumbFilters {
 
     @Override
     public String toString() {
-        return PREFIX + Joiner.on(":").join(filters.values().stream().map(Object::toString).collect(Collectors.toList()));
+        return PREFIX + Joiner.on(":").join(filters.stream().map(Object::toString).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Iterator<ThumbFilter> iterator() {
+        return filters.iterator();
     }
 }

@@ -1,5 +1,7 @@
 package org.eightlog.thumty.image.io;
 
+import org.eightlog.thumty.image.Image;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import java.awt.image.BufferedImage;
@@ -17,13 +19,13 @@ public interface ImageOutput {
      * @param format the format
      * @return true if write is supported
      */
-    default boolean isWriteSupported(String format) {
+    default boolean isSupportedFormat(String format) {
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(format);
         return writers.hasNext();
     }
 
     default void write(Image image) throws IOException, UnsupportedFormatException {
-        write(image.getBufferedImage(), image.getFormat(), image.getQuality());
+        write(image.getSource(), image.getFormat(), image.getQuality());
     }
 
     /**
