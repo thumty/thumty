@@ -15,14 +15,14 @@ import java.awt.image.BufferedImage;
 /**
  * @author Iliya Grushevskiy <iliya.gr@gmail.com>
  */
-public class AsyncFeaturesDetector implements AsyncFilter {
+public class AsyncFeatures implements AsyncFilter {
 
     private final FeatureDetectionService detector;
     private final String resource;
     private final ThumbAlign align;
     private final ThumbResize resize;
 
-    public AsyncFeaturesDetector(Vertx vertx, String resource, ThumbAlign align, ThumbResize resize) {
+    public AsyncFeatures(Vertx vertx, String resource, ThumbAlign align, ThumbResize resize) {
         this.detector = FeatureDetectionService.createProxy(vertx, FeatureDetectionService.FEATURE_DETECTOR_ADDRESS);
         this.resource = resource;
         this.align = align;

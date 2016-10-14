@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 
@@ -39,10 +40,9 @@ public abstract class OpenCVFeatureDetector implements FeatureDetector {
     protected List<Feature> detect(Mat image, Rectangle rectangle) {
         Mat sub = new Mat(image, new Rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
 
-        List<Feature> features = detect(sub);
-        features.forEach(f -> f.getShape().translate(rectangle.x, rectangle.y));
-
-        return features;
+        return detect(sub).stream()
+                .map(f -> f.translate(rectangle.x, rectangle.y))
+                .collect(Collectors.toList());
     }
 
     private Mat fromBufferedImage(BufferedImage image) {

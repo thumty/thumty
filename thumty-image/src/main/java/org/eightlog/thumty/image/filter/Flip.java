@@ -65,9 +65,9 @@ public class Flip extends TransformFilter {
         Rectangle shape = feature.getShape();
 
         if (direction == Direction.HORIZONTAL) {
-            return new Feature(new Rectangle(size.width - shape.x - shape.width, shape.y, shape.width, shape.height), feature.getWeight(), feature.getType());
+            return feature.withShape(new Rectangle(size.width - shape.x - shape.width, shape.y, shape.width, shape.height));
         }
 
-        return new Feature(new Rectangle(shape.x, size.height - shape.y - shape.height, shape.width, shape.height), feature.getWeight(), feature.getType());
+        return feature.withShape(new Rectangle(shape.x, size.height - shape.y - shape.height, shape.width, shape.height));
     }
 }

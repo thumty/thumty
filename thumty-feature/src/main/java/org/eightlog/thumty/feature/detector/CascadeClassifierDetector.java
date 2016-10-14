@@ -1,6 +1,7 @@
 package org.eightlog.thumty.feature.detector;
 
 import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -20,12 +21,11 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
 
     private final double scaleFactor;
 
-    private final int featureType;
+    private final FeatureType featureType;
 
     private final double weight;
 
-    public CascadeClassifierDetector(int minNeighbors, double scaleFactor, int featureType,
-                                     double weight) {
+    public CascadeClassifierDetector(FeatureType featureType, double weight, int minNeighbors, double scaleFactor) {
         this.minNeighbors = minNeighbors;
         this.scaleFactor = scaleFactor;
         this.featureType = featureType;
@@ -45,7 +45,7 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
 
             for (long i = 0; i < detected.size(); i++) {
                 Rect rect = detected.get(i);
-                results.add(new Feature(new Rectangle(rect.x(), rect.y(), rect.width(), rect.height()), weight, featureType));
+                results.add(new Feature(new Rectangle(rect.x(), rect.y(), rect.width(), rect.height()), featureType, weight));
             }
 
         } finally {

@@ -9,35 +9,20 @@ import java.util.Objects;
  */
 public class Feature implements Comparable<Feature>, Serializable {
 
-    /**
-     * Unclassified common feature type
-     */
-    public static final int COMMON = 0;
-
-    /**
-     * Face feature type
-     */
-    public static final int FACE = 1;
-
-    /**
-     * Eye feature type
-     */
-    public static final int EYE = 2;
-
     private final Rectangle shape;
 
     private final double weight;
 
-    private final int type;
+    private final FeatureType type;
 
-    public Feature(Rectangle shape, double weight, int type) {
+    public Feature(Rectangle shape, FeatureType type, double weight) {
         this.shape = shape;
         this.weight = weight;
         this.type = type;
     }
 
     public Feature(Rectangle shape, double weight) {
-        this(shape, weight, COMMON);
+        this(shape, FeatureType.COMMON, weight);
     }
 
     /**
@@ -60,7 +45,7 @@ public class Feature implements Comparable<Feature>, Serializable {
      * Get feature type
      * @return a feature type
      */
-    public int getType() {
+    public FeatureType getType() {
         return type;
     }
 
@@ -70,7 +55,7 @@ public class Feature implements Comparable<Feature>, Serializable {
         int width = shape.width;
         int height = shape.height;
 
-        return new Feature(new Rectangle(x + dx, y + dy, width, height), weight, type);
+        return withShape(new Rectangle(x + dx, y + dy, width, height));
     }
 
     public Feature scale(double dX, double dY) {
@@ -79,7 +64,7 @@ public class Feature implements Comparable<Feature>, Serializable {
         int width = shape.width;
         int height = shape.height;
 
-        return new Feature(new Rectangle((int) (x * dX), (int) (y * dY), (int) (width * dX), (int) (height * dY)), weight, type);
+        return withShape(new Rectangle((int) (x * dX), (int) (y * dY), (int) (width * dX), (int) (height * dY)));
     }
 
     public Feature crop(Rectangle rectangle) {
@@ -113,7 +98,15 @@ public class Feature implements Comparable<Feature>, Serializable {
             nHeight -= (y + height) - (rectangle.y + rectangle.height);
         }
 
-        return new Feature(new Rectangle(nX, nY, nWidth, nHeight), weight, type);
+        return withShape(new Rectangle(nX, nY, nWidth, nHeight));
+    }
+
+    public Feature withShape(Rectangle shape) {
+        return new Feature(shape, type, weight);
+    }
+
+    public Feature withWeight(double weight) {
+        return new Feature(shape, type, weight);
     }
 
     @Override

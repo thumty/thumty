@@ -13,7 +13,7 @@ public class FeatureTest {
 
     @Test
     public void shouldScaleRegion() throws Exception {
-        assertThat(new Feature(new Rectangle(10, 20, 100, 100), 1, Feature.COMMON).scale(2, 3))
+        assertThat(new Feature(new Rectangle(10, 20, 100, 100), FeatureType.COMMON, 1).scale(2, 3))
                 .isEqualTo(new Feature(new Rectangle(20, 60, 200, 300), 1));
     }
 
