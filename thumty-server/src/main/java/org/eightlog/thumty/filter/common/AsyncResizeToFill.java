@@ -7,7 +7,6 @@ import org.eightlog.thumty.image.filter.ResizeToFill;
 import org.eightlog.thumty.image.geometry.*;
 import org.eightlog.thumty.server.params.ThumbAlign;
 import org.eightlog.thumty.server.params.ThumbAlignType;
-import org.eightlog.thumty.server.params.ThumbResize;
 
 import java.util.Collections;
 
@@ -20,13 +19,10 @@ public class AsyncResizeToFill extends AbstractAsyncFilter {
 
     private final ThumbAlign align;
 
-    private final ThumbResize resize;
-
-    public AsyncResizeToFill(Vertx vertx, Size size, ThumbAlign align, ThumbResize resize) {
+    public AsyncResizeToFill(Vertx vertx, Size size, ThumbAlign align) {
         super(vertx);
         this.size = size;
         this.align = align;
-        this.resize = resize;
     }
 
     @Override
@@ -35,7 +31,7 @@ public class AsyncResizeToFill extends AbstractAsyncFilter {
     }
 
     private Align getAlign(Image image) {
-        if (align != null && (resize == ThumbResize.FILL || resize == null)) {
+        if (align != null) {
             if (align.getType() == ThumbAlignType.FACE) {
                 return getFaceAlign(image, align.getNumber());
             }
@@ -65,7 +61,7 @@ public class AsyncResizeToFill extends AbstractAsyncFilter {
 
     private Align getFaceAlign(Image image, int num) {
         int index = num < 1 ? 0 : num - 1;
-        Feature face = image.getFeatures().stream().filter(f -> f.getType() == Feature.FACE).skip(index).findFirst().orElse(null);
+        Feature face = image.getFeatures().stream().filter(f -> f.getType() == FeatureType.FACE).skip(index).findFirst().orElse(null);
 
         return face == null ? FixedAlign.CENTER : new FeatureAlign(Collections.singletonList(face));
     }

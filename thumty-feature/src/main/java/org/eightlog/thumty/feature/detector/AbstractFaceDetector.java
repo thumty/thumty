@@ -2,6 +2,7 @@ package org.eightlog.thumty.feature.detector;
 
 import com.google.common.collect.ImmutableList;
 import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public abstract class AbstractFaceDetector extends CascadeClassifierDetector {
     private final EyeDetector eyeDetector;
 
     public AbstractFaceDetector(double weight) {
-        super(weight);
+        super(FeatureType.FACE, weight, 3, 1.1);
         eyeDetector = new EyeDetector(weight / 2);
     }
 
@@ -57,27 +58,12 @@ public abstract class AbstractFaceDetector extends CascadeClassifierDetector {
         Rectangle area = new Rectangle(Math.max(0, x - sides / 2), Math.max(0, y - hair),
                 width + sides, height + hair + neck);
 
-        return new Feature(area, feature.getWeight(), feature.getType());
+        return feature.withShape(area);
     }
 
     @Override
     protected Size getMinSize(int width, int height) {
         int size = Math.max(Math.min(width, height) / 15, 20);
         return new Size(size, size);
-    }
-
-    @Override
-    protected double getScaleFactor() {
-        return 1.2;
-    }
-
-    @Override
-    protected int getMinNeighbors() {
-        return 3;
-    }
-
-    @Override
-    protected int getFeatureType() {
-        return Feature.FACE;
     }
 }

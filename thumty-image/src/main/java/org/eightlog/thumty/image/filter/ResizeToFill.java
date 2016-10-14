@@ -82,7 +82,7 @@ public class ResizeToFill extends TransformFilter {
 
         return features.stream()
                 .map(f -> f.crop(region))
-                .map(f -> f.scale(scale, scale))
+                .map(f -> f.scale(1 / scale, 1 / scale))
                 .collect(Collectors.toList());
     }
 

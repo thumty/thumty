@@ -29,16 +29,8 @@ public interface FeatureDetectionService {
      * Search any feature in resource
      *
      * @param resource the resource location
+     * @param target   the targeted detection feature types
      * @param handler  the result handler
      */
-    void detectAny(String resource, Handler<AsyncResult<Features>> handler);
-
-    /**
-     * Search all features in resource
-     * @param resource the resource location
-     * @param handler the result handler
-     */
-    void detectAll(String resource, Handler<AsyncResult<Features>> handler);
-
-    void detectFace(String resource, Handler<AsyncResult<Features>> handler);
+    void detect(String resource, DetectionTarget target, Handler<AsyncResult<Features>> handler);
 }

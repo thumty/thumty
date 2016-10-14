@@ -18,6 +18,7 @@ package org.eightlog.thumty.feature.converter;
 
 import io.vertx.core.json.JsonObject;
 import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 
 import java.awt.*;
 
@@ -29,9 +30,9 @@ public class FeatureConverter {
         int width = json.getInteger("width", 0);
         int height = json.getInteger("height", 0);
         double weight = json.getDouble("weight", 0D);
-        int type = json.getInteger("type", Feature.COMMON);
+        FeatureType type = FeatureType.valueOf(json.getString("type", FeatureType.COMMON.name()));
 
-        return new Feature(new Rectangle(x, y, width, height), weight, type);
+        return new Feature(new Rectangle(x, y, width, height), type, weight);
     }
 
     public static JsonObject toJson(Feature feature) {
@@ -42,7 +43,7 @@ public class FeatureConverter {
         json.put("width", feature.getShape().width);
         json.put("height", feature.getShape().height);
         json.put("weight", feature.getWeight());
-        json.put("type", feature.getType());
+        json.put("type", feature.getType().name());
 
         return json;
     }

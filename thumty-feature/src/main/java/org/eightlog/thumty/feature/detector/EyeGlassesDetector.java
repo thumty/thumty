@@ -2,7 +2,7 @@ package org.eightlog.thumty.feature.detector;
 
 import com.google.common.io.Files;
 import org.bytedeco.javacpp.Loader;
-import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,10 +16,11 @@ public class EyeGlassesDetector extends CascadeClassifierDetector {
     private final CascadeClassifier classifier;
 
     public EyeGlassesDetector(double weight) {
-        super(weight);
+        super(FeatureType.EYE, weight, 3, 1.2);
 
         try {
-            File xml = Loader.extractResource(EyeGlassesDetector.class, "/haarcascade_eye_tree_eyeglasses.xml", Files.createTempDir(), "classified", ".xml");
+            File xml = Loader.extractResource(EyeGlassesDetector.class, "/haarcascade_eye_tree_eyeglasses.xml",
+                    Files.createTempDir(), "classified", ".xml");
             xml.deleteOnExit();
 
             classifier = new CascadeClassifier();
@@ -40,8 +41,4 @@ public class EyeGlassesDetector extends CascadeClassifierDetector {
         classifier.close();
     }
 
-    @Override
-    protected int getFeatureType() {
-        return Feature.EYE;
-    }
 }

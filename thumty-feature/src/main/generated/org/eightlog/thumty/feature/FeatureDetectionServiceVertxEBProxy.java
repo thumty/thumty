@@ -56,51 +56,16 @@ public class FeatureDetectionServiceVertxEBProxy implements FeatureDetectionServ
     } catch (IllegalStateException ex) {}
   }
 
-  public void detectAny(String resource, Handler<AsyncResult<Features>> handler) {
+  public void detect(String resource, DetectionTarget target, Handler<AsyncResult<Features>> handler) {
     if (closed) {
       handler.handle(Future.failedFuture(new IllegalStateException("Proxy is closed")));
       return;
     }
     JsonObject _json = new JsonObject();
     _json.put("resource", resource);
+    _json.put("target", target == null ? null : target.toString());
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
-    _deliveryOptions.addHeader("action", "detectAny");
-    _vertx.eventBus().<JsonObject>send(_address, _json, _deliveryOptions, res -> {
-      if (res.failed()) {
-        handler.handle(Future.failedFuture(res.cause()));
-      } else {
-        handler.handle(Future.succeededFuture(res.result().body() == null ? null : new Features(res.result().body())));
-                      }
-    });
-  }
-
-  public void detectAll(String resource, Handler<AsyncResult<Features>> handler) {
-    if (closed) {
-      handler.handle(Future.failedFuture(new IllegalStateException("Proxy is closed")));
-      return;
-    }
-    JsonObject _json = new JsonObject();
-    _json.put("resource", resource);
-    DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
-    _deliveryOptions.addHeader("action", "detectAll");
-    _vertx.eventBus().<JsonObject>send(_address, _json, _deliveryOptions, res -> {
-      if (res.failed()) {
-        handler.handle(Future.failedFuture(res.cause()));
-      } else {
-        handler.handle(Future.succeededFuture(res.result().body() == null ? null : new Features(res.result().body())));
-                      }
-    });
-  }
-
-  public void detectFace(String resource, Handler<AsyncResult<Features>> handler) {
-    if (closed) {
-      handler.handle(Future.failedFuture(new IllegalStateException("Proxy is closed")));
-      return;
-    }
-    JsonObject _json = new JsonObject();
-    _json.put("resource", resource);
-    DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
-    _deliveryOptions.addHeader("action", "detectFace");
+    _deliveryOptions.addHeader("action", "detect");
     _vertx.eventBus().<JsonObject>send(_address, _json, _deliveryOptions, res -> {
       if (res.failed()) {
         handler.handle(Future.failedFuture(res.cause()));

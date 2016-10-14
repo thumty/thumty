@@ -223,8 +223,8 @@ public class ThumbBuilder {
             case BufferedImage.TYPE_4BYTE_ABGR_PRE:
             case BufferedImage.TYPE_INT_ARGB:
             case BufferedImage.TYPE_INT_ARGB_PRE:
-                return "png";
+                return "PNG";
         }
-        return "jpg";
+        return "JPG";
     }
 }

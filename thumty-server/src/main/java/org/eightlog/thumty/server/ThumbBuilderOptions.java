@@ -15,13 +15,15 @@ public class ThumbBuilderOptions {
      */
     private final static String CACHE_CONFIG_KEY = "cache";
 
+    /**
+     * Default image quality
+     */
     private static final float DEFAULT_QUALITY = 0.85f;
 
     private final JsonObject config;
 
     public ThumbBuilderOptions(JsonObject config) {
         Objects.requireNonNull(config);
-
         this.config = config;
     }
 

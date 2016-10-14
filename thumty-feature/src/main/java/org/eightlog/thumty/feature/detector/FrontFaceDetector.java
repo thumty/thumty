@@ -9,16 +9,24 @@ import java.io.IOException;
 import static org.bytedeco.javacpp.opencv_objdetect.CascadeClassifier;
 
 /**
+ * OpenCV front face feature detector
+ *
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
  */
 public class FrontFaceDetector extends AbstractFaceDetector {
 
     private final CascadeClassifier classifier;
 
+    /**
+     * Front face detector constructor
+     *
+     * @param weight the feature weight
+     */
     public FrontFaceDetector(double weight) {
         super(weight);
         try {
-            File frontFaceXml = Loader.extractResource(FrontFaceDetector.class, "/haarcascade_frontalface_default.xml", Files.createTempDir(), "classified", ".xml");
+            File frontFaceXml = Loader.extractResource(FrontFaceDetector.class, "/haarcascade_frontalface_default.xml",
+                    Files.createTempDir(), "classified", ".xml");
             frontFaceXml.deleteOnExit();
 
             classifier = new CascadeClassifier();

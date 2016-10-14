@@ -33,7 +33,12 @@ public class AsyncThumbBuilder implements AsyncFilter {
      */
     @Override
     public Future<Image> apply(Image image) {
-        return AsyncFilter.compose(getFeatureFilter(), getPreProcessFilter(), getTransformFilter(), getPostProcessFilter(), new AsyncFeatureFilter(vertx)).apply(image);
+        return AsyncFilter.compose(
+                getFeatureFilter(),
+                getPreProcessFilter(),
+                getTransformFilter(),
+                getPostProcessFilter()
+        ).apply(image);
     }
 
     private AsyncFilter getCrop() {
@@ -48,7 +53,7 @@ public class AsyncThumbBuilder implements AsyncFilter {
             if (params.getResize() == ThumbResize.FIT) {
                 return new AsyncResizeToFit(vertx, params.getSize().toImageSize()).andThen(getFlip(size));
             } else {
-                return new AsyncResizeToFill(vertx, params.getSize().toImageSize(), params.getAlign(), params.getResize()).andThen(getFlip(size));
+                return new AsyncResizeToFill(vertx, params.getSize().toImageSize(), params.getAlign()).andThen(getFlip(size));
             }
         }
 
@@ -70,7 +75,7 @@ public class AsyncThumbBuilder implements AsyncFilter {
     }
 
     private AsyncFilter getFeatureFilter() {
-        return new AsyncFeaturesDetector(vertx, params.getSource(), params.getAlign(), params.getResize());
+        return new AsyncFeatures(vertx, params.getSource(), params.getAlign(), params.getResize());
     }
 
     private AsyncFilter getPreProcessFilter() {

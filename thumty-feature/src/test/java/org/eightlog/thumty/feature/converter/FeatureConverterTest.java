@@ -2,6 +2,7 @@ package org.eightlog.thumty.feature.converter;
 
 import io.vertx.core.json.JsonObject;
 import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 import org.junit.Test;
 
 import java.awt.*;
@@ -20,17 +21,17 @@ public class FeatureConverterTest {
                 "  \"y\": 12,\n" +
                 "  \"width\": 13,\n" +
                 "  \"height\": 14,\n" +
-                "  \"type\": 1,\n" +
+                "  \"type\": \"FACE\",\n" +
                 "  \"weight\": 3.141\n" +
                 "}"));
 
-        assertThat(feature).isEqualTo(new Feature(new Rectangle(11, 12, 13, 14), 3.141, Feature.FACE));
+        assertThat(feature).isEqualTo(new Feature(new Rectangle(11, 12, 13, 14), FeatureType.FACE, 3.141));
     }
 
     @Test
     public void shouldConvertToJson() throws Exception {
         JsonObject json = FeatureConverter.toJson(
-                new Feature(new Rectangle(11, 12, 13, 14), 3.141, Feature.FACE)
+                new Feature(new Rectangle(11, 12, 13, 14), FeatureType.FACE, 3.141)
         );
 
         assertThat(json.getInteger("x")).isEqualTo(11);
@@ -38,6 +39,6 @@ public class FeatureConverterTest {
         assertThat(json.getInteger("width")).isEqualTo(13);
         assertThat(json.getInteger("height")).isEqualTo(14);
         assertThat(json.getDouble("weight")).isEqualTo(3.141);
-        assertThat(json.getInteger("type")).isEqualTo(Feature.FACE);
+        assertThat(json.getString("type")).isEqualTo(FeatureType.FACE.name());
     }
 }

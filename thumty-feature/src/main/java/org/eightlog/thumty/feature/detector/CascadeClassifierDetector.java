@@ -1,6 +1,7 @@
 package org.eightlog.thumty.feature.detector;
 
 import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,9 +17,18 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
 
     private final static Size DEFAULT_OBJECT_SIZE = new Size();
 
+    private final int minNeighbors;
+
+    private final double scaleFactor;
+
+    private final FeatureType featureType;
+
     private final double weight;
 
-    public CascadeClassifierDetector(double weight) {
+    public CascadeClassifierDetector(FeatureType featureType, double weight, int minNeighbors, double scaleFactor) {
+        this.minNeighbors = minNeighbors;
+        this.scaleFactor = scaleFactor;
+        this.featureType = featureType;
         this.weight = weight;
     }
 
@@ -28,14 +38,14 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
         RectVector detected = new RectVector();
 
         try {
-            getClassifier().detectMultiScale(image, detected, getScaleFactor(), getMinNeighbors(),
-                    CV_HAAR_DO_CANNY_PRUNING | CV_HAAR_SCALE_IMAGE
+            getClassifier().detectMultiScale(image, detected, scaleFactor, minNeighbors,
+                    CV_HAAR_SCALE_IMAGE
                             | CV_HAAR_FIND_BIGGEST_OBJECT
                             | CV_HAAR_DO_ROUGH_SEARCH, getMinSize(image.cols(), image.rows()), getMaxSize(image.cols(), image.rows()));
 
             for (long i = 0; i < detected.size(); i++) {
                 Rect rect = detected.get(i);
-                results.add(new Feature(new Rectangle(rect.x(), rect.y(), rect.width(), rect.height()), weight, getFeatureType()));
+                results.add(new Feature(new Rectangle(rect.x(), rect.y(), rect.width(), rect.height()), featureType, weight));
             }
 
         } finally {
@@ -53,17 +63,5 @@ public abstract class CascadeClassifierDetector extends OpenCVFeatureDetector {
 
     protected Size getMaxSize(int width, int height) {
         return DEFAULT_OBJECT_SIZE;
-    }
-
-    protected int getMinNeighbors() {
-        return 4;
-    }
-
-    protected double getScaleFactor() {
-        return 1.2;
-    }
-
-    protected int getFeatureType() {
-        return Feature.COMMON;
     }
 }

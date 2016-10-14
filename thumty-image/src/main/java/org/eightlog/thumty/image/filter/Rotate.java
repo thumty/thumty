@@ -32,6 +32,8 @@ public class Rotate extends TransformFilter {
      */
     public static final Rotate ROTATE_180 = new Rotate(180);
 
+    private static final int DEFAULT_FILL_COLOR = 0x00000000;
+
     private final double angle;
     private final Color fill;
 
@@ -52,30 +54,7 @@ public class Rotate extends TransformFilter {
      * @param angle the rotation angle in degrees
      */
     public Rotate(double angle) {
-        this(angle, Color.BLACK);
-    }
-
-    @Override
-    public org.eightlog.thumty.image.Image apply(org.eightlog.thumty.image.Image image) {
-        Graphics2D g1 = image.getSource().createGraphics();
-        g1.setColor(Color.RED);
-        g1.setStroke(new BasicStroke(2));
-        for (Feature feature : image.getFeatures()) {
-            g1.drawRect(feature.getShape().x, feature.getShape().y, feature.getShape().width, feature.getShape().height);
-        }
-        g1.dispose();
-
-        org.eightlog.thumty.image.Image result = super.apply(image);
-        Graphics2D g = result.getSource().createGraphics();
-
-        g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(2));
-        for (Feature feature : result.getFeatures()) {
-            g.drawRect(feature.getShape().x, feature.getShape().y, feature.getShape().width, feature.getShape().height);
-        }
-        g.dispose();
-
-        return result;
+        this(angle, new Color(DEFAULT_FILL_COLOR, true));
     }
 
     @Override
@@ -146,6 +125,6 @@ public class Rotate extends TransformFilter {
 
     private Feature rotate(Feature feature, AffineTransform transform) {
         Rectangle shape = transform.createTransformedShape(feature.getShape()).getBounds();
-        return new Feature(shape, feature.getWeight(), feature.getType());
+        return new Feature(shape, feature.getType(), feature.getWeight());
     }
 }

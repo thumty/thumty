@@ -67,7 +67,7 @@ public class ResizeToFit extends TransformFilter {
         Dimension resulting = size.calculate(current.width, current.height);
         double scale = getScale(current, resulting);
 
-        return features.stream().map(f -> f.scale(scale, scale)).collect(Collectors.toList());
+        return features.stream().map(f -> f.scale(1 / scale, 1 / scale)).collect(Collectors.toList());
     }
 
     private double getScale(Dimension current, Dimension resulting) {

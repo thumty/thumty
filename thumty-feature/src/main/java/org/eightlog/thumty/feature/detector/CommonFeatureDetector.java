@@ -2,6 +2,7 @@ package org.eightlog.thumty.feature.detector;
 
 import org.bytedeco.javacpp.indexer.FloatRawIndexer;
 import org.eightlog.thumty.image.geometry.Feature;
+import org.eightlog.thumty.image.geometry.FeatureType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class CommonFeatureDetector extends OpenCVFeatureDetector {
                 int x = (int) indexer.get(i);
                 int y = (int) indexer.get(i + 1);
 
-                result.add(new Feature(new Rectangle(x, y, 1, 1), weight, Feature.COMMON));
+                result.add(new Feature(new Rectangle(x, y, 1, 1), FeatureType.COMMON, weight));
             }
 
             return result;
