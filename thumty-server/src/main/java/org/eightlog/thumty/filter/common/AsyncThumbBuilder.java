@@ -41,6 +41,11 @@ public class AsyncThumbBuilder implements AsyncFilter {
         ).apply(image);
     }
 
+    private AsyncFilter getTrim() {
+        ThumbTrim trim = params.getTrim();
+        return trim != null ? new AsyncTrim(vertx, trim) : AsyncFilter.IDENTITY;
+    }
+
     private AsyncFilter getCrop() {
         ThumbCrop crop = params.getCrop();
         return crop != null ? new AsyncCrop(vertx, crop.toInsets()) : AsyncFilter.IDENTITY;
@@ -119,6 +124,6 @@ public class AsyncThumbBuilder implements AsyncFilter {
     }
 
     private AsyncFilter getTransformFilter() {
-        return AsyncFilter.compose(getCrop(), getResizer());
+        return AsyncFilter.compose(getTrim(), getCrop(), getResizer());
     }
 }

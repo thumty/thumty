@@ -186,7 +186,9 @@ public class ReadStreamInputStreamTest {
         }
 
         public void error(Throwable error) {
-            exceptionHandler.handle(error);
+            if (exceptionHandler != null) {
+                exceptionHandler.handle(error);
+            }
         }
     }
 }

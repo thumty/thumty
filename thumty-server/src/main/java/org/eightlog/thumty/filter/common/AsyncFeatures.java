@@ -31,9 +31,10 @@ public class AsyncFeatures implements AsyncFilter {
 
     @Override
     public Future<Image> apply(Image image) {
-        Future<Features> future = Future.future();
+        Future<Features> future = Future.succeededFuture(new Features());
 
         if (align != null && (resize == null || resize == ThumbResize.FILL)) {
+            future = Future.future();
             switch (align.getType()) {
                 case FACE:
                     detector.detect(resource, DetectionTarget.FACE, future.completer());
@@ -41,8 +42,6 @@ public class AsyncFeatures implements AsyncFilter {
                 case AUTO:
                     detector.detect(resource, DetectionTarget.ALL, future.completer());
                     break;
-                default:
-                    future.complete(new Features());
             }
         }
 

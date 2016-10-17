@@ -1,5 +1,8 @@
 package org.eightlog.thumty.server.params;
 
+import org.eightlog.thumty.image.geometry.Coordinate;
+import org.eightlog.thumty.image.geometry.RelativeOrAbsoluteCoordinate;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,15 +12,15 @@ import java.util.regex.Pattern;
  */
 public class ThumbTrim {
 
-    private final static Pattern PATTERN = Pattern.compile("^trim(?<position>:(top-left|bottom-right))?(?<tolerance>:\\d+)?$", Pattern.CASE_INSENSITIVE);
+    private final static Pattern PATTERN = Pattern.compile("^trim(?<position>:(top-left|bottom-right))?(?<tolerance>:\\d+(\\.\\d+)?)?$", Pattern.CASE_INSENSITIVE);
 
     private final float x;
 
     private final float y;
 
-    private final int tolerance;
+    private final float tolerance;
 
-    public ThumbTrim(float x, float y, int tolerance) {
+    public ThumbTrim(float x, float y, float tolerance) {
         this.x = x;
         this.y = y;
         this.tolerance = tolerance;
@@ -42,11 +45,11 @@ public class ThumbTrim {
                 }
             }
 
-            int tolerance = 0;
+            float tolerance = 0;
 
             if (matcher.group("tolerance") != null) {
                 try {
-                    tolerance = Integer.parseInt(matcher.group("tolerance").substring(1));
+                    tolerance = Float.parseFloat(matcher.group("tolerance").substring(1));
                 }catch (NumberFormatException ignore) {
                     // Ignore
                 }
@@ -66,7 +69,7 @@ public class ThumbTrim {
         return y;
     }
 
-    public int getTolerance() {
+    public float getTolerance() {
         return tolerance;
     }
 
@@ -88,5 +91,9 @@ public class ThumbTrim {
     @Override
     public String toString() {
         return "trim:" + (x == y && y == 0.0 ? "top-left" : "bottom-right") + ":" + tolerance;
+    }
+
+    public Coordinate toCoordinate() {
+        return new RelativeOrAbsoluteCoordinate(x, y);
     }
 }
