@@ -252,7 +252,7 @@ public class JDBCContentCache implements ContentCache {
         if (cacheSize > 0) {
             return client.begin(tx ->
                     size(tx).compose(totalSize -> {
-                        if (totalSize > cacheSize) {
+                        if (totalSize != null && totalSize > cacheSize) {
                             return tx.query("SELECT key, size FROM " + table + " ORDER BY accessed ASC, size DESC LIMIT " + batchSize)
                                     .map(res -> {
                                         long diff = totalSize - cacheSize;
