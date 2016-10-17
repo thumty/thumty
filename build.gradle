@@ -15,7 +15,7 @@ allprojects {
 
 subprojects {
     group 'org.eightlog'
-    version '1.0.0'
+    version '1.0.1'
 
     apply plugin: 'java'
     apply plugin: 'idea'
@@ -29,6 +29,30 @@ subprojects {
                 srcDirs += 'src/main/generated'
             }
         }
+    }
+
+    ext.platform = {
+        if (project.hasProperty("platformName")) {
+            return project.platformName
+        }
+
+        // Detect platform
+        def os = System.getProperty("os.name").toLowerCase()
+        def arch = System.getProperty("os.arch").toLowerCase()
+
+        if (os.startsWith("mac")) {
+            return "macosx-" + arch
+        }
+
+        if (os.contains("win")) {
+            return "windows-" + arch
+        }
+
+        if (os.contains("nux")) {
+            return "linux-" + arch
+        }
+
+        throw new IllegalStateException("Unknown or unsupported OS: " + os)
     }
 
     dependencies {

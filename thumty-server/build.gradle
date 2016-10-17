@@ -22,7 +22,7 @@ dependencies {
 }
 
 shadowJar {
-    classifier = ''
+    classifier = platform()
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
         attributes 'Main-Verticle': 'org.eightlog.thumty.server.Thumty'
