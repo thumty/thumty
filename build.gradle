@@ -40,6 +40,10 @@ subprojects {
         def os = System.getProperty("os.name").toLowerCase()
         def arch = System.getProperty("os.arch").toLowerCase()
 
+        if (arch == 'amd64') {
+            arch = 'x86_64'
+        }
+
         if (os.startsWith("mac")) {
             return "macosx-" + arch
         }
