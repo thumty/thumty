@@ -35,7 +35,7 @@ public class ThumtyOptions {
     }
 
     public String getSecret() {
-        return config.getString("secret", "");
+        return config.getString("secret", null);
     }
 
     public boolean isSecured() {
