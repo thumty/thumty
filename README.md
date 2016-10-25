@@ -24,17 +24,9 @@ http://example.com/fit-in/-200x200/http://example.com/original/image.jpg - will 
 
 ## Running
 
-### Generating random secret key
-
-```bash 
-openssl rand -base64 32
-``` 
-
 ### Create minimum configuration file
 ```json
 {
-  "secret": "[generated secret key]",
-  "secured": false,
   "loaders": {
     "http" : {}
   }
