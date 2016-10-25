@@ -24,4 +24,24 @@ http://example.com/fit-in/-200x200/http://example.com/original/image.jpg - will 
 
 ## Running
 
-```java -jar thumty-server-1.0.1-linux-x86_64.jar -config config.json```
+### Generating random secret key
+
+```bash 
+openssl rand -base64 32
+``` 
+
+### Create minimum configuration file
+```json
+{
+  "secret": "[generated secret key]",
+  "secured": false,
+  "loaders": {
+    "http" : {}
+  }
+}
+```
+
+### Run Thumty
+```bash 
+java -jar thumty-server-1.0.1-linux-x86_64.jar -config config.json
+```
