@@ -36,7 +36,7 @@ public class ReadStreamInputStreamTest {
 
         rule.vertx().executeBlocking(f -> {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                try (InputStream in = new ReadStreamInputStream(readStream)) {
+                try (InputStream in = new ReadStreamInputStream(rule.vertx(), readStream)) {
                     ByteStreams.copy(in, out);
                 }
                 f.complete(out.toByteArray());
@@ -77,7 +77,7 @@ public class ReadStreamInputStreamTest {
 
         rule.vertx().executeBlocking(f -> {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                try (InputStream in = new ReadStreamInputStream(readStream, 100, TimeUnit.MILLISECONDS)) {
+                try (InputStream in = new ReadStreamInputStream(rule.vertx(), readStream, 100, TimeUnit.MILLISECONDS)) {
                     ByteStreams.copy(in, out);
                 }
                 f.complete(out.toByteArray());
@@ -104,7 +104,7 @@ public class ReadStreamInputStreamTest {
 
         rule.vertx().executeBlocking(f -> {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                try (InputStream in = new ReadStreamInputStream(readStream)) {
+                try (InputStream in = new ReadStreamInputStream(rule.vertx(), readStream)) {
                     ByteStreams.copy(in, out);
                 }
                 f.complete(out.toByteArray());
