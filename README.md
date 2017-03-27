@@ -43,7 +43,7 @@ openssl rand -base64 32
 
 ### Run Thumty
 ```bash 
-java -jar thumty-server-1.0.1-linux-x86_64.jar -config config.json
+java -jar thumty-server-1.0.1-linux-x86_64.jar -conf config.json
 ```
 
 Open http://localhost:8080/200x200/placehold.it/350x150
