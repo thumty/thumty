@@ -15,7 +15,7 @@ allprojects {
 
 subprojects {
     group 'org.eightlog'
-    version '1.0.1'
+    version '1.0.2'
 
     apply plugin: 'java'
     apply plugin: 'idea'

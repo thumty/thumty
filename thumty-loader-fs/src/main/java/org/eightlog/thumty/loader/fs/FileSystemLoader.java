@@ -68,7 +68,7 @@ public class FileSystemLoader {
                     future.fail(new LoaderException("File not found " + uri));
                 }
 
-            }, res -> {
+            }, false, res -> {
                 if (res.succeeded()) {
                     Attributes attributes = (Attributes) res.result();
 

@@ -33,20 +33,15 @@ public abstract class AbstractAsyncFilter implements AsyncFilter {
     @Override
     public AsyncFilter andThen(AsyncFilter after) {
         if (after instanceof AbstractAsyncFilter) {
-            AbstractAsyncFilter afterFilter = (AbstractAsyncFilter) after;
-            return (image) -> {
-                Future<Image> future = Future.future();
+            final AbstractAsyncFilter afterFilter = (AbstractAsyncFilter) after;
 
-                vertx.executeBlocking(f -> {
-                    try {
-                        f.complete(afterFilter.applyBlocking(applyBlocking(image)));
-                    } catch (Throwable t) {
-                        f.fail(t);
-                    }
-                }, false, future.completer());
-
-                return future;
+            return new AbstractAsyncFilter(vertx) {
+                @Override
+                protected Image applyBlocking(Image image) {
+                    return afterFilter.applyBlocking(applyBlocking(image));
+                }
             };
+
         }
         return image -> apply(image).compose(after::apply);
     }

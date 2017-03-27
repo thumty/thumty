@@ -36,7 +36,7 @@ public class ReadStreamInputStreamTest {
 
         rule.vertx().executeBlocking(f -> {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                try (InputStream in = new ReadStreamInputStream(readStream)) {
+                try (InputStream in = new ReadStreamInputStream(rule.vertx(), readStream)) {
                     ByteStreams.copy(in, out);
                 }
                 f.complete(out.toByteArray());
@@ -77,7 +77,7 @@ public class ReadStreamInputStreamTest {
 
         rule.vertx().executeBlocking(f -> {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                try (InputStream in = new ReadStreamInputStream(readStream, 100, TimeUnit.MILLISECONDS)) {
+                try (InputStream in = new ReadStreamInputStream(rule.vertx(), readStream, 100, TimeUnit.MILLISECONDS)) {
                     ByteStreams.copy(in, out);
                 }
                 f.complete(out.toByteArray());
@@ -104,20 +104,18 @@ public class ReadStreamInputStreamTest {
 
         rule.vertx().executeBlocking(f -> {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                try (InputStream in = new ReadStreamInputStream(readStream)) {
+                try (InputStream in = new ReadStreamInputStream(rule.vertx(), readStream)) {
                     ByteStreams.copy(in, out);
                 }
                 f.complete(out.toByteArray());
             } catch (IOException e) {
                 f.fail(e);
             }
-
         }, res -> {
-            async.complete();
             ctx.assertTrue(res.failed());
+            async.complete();
         });
 
-        readStream.write(new byte[]{0x00, 0x01, 0x02});
         readStream.write(new byte[]{0x00, 0x01, 0x02});
         readStream.error(new Exception("Error"));
         readStream.end();
@@ -138,11 +136,15 @@ public class ReadStreamInputStreamTest {
         public FakeReadStream(long delay) {
             rule.vertx().setPeriodic(delay, v -> {
                 if (ended && deque.size() == 0) {
+                    rule.vertx().cancelTimer(v);
+
                     endHandler.handle(null);
                 }
 
                 if (!paused && deque.size() > 0) {
-                    handler.handle(deque.pollLast());
+                    if (handler != null) {
+                        handler.handle(deque.pollLast());
+                    }
                 }
             });
         }

@@ -1,19 +1,15 @@
 package org.eightlog.thumty.common.stream;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The {@link ReadStream} {@link InputStream} wrapper.
@@ -23,6 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
  */
 public class ReadStreamInputStream extends InputStream {
+
+    private final Vertx vertx;
 
     /**
      * Read queue size, optimized for AsyncFile default buffer size
@@ -37,37 +35,27 @@ public class ReadStreamInputStream extends InputStream {
     /**
      * Internal byte buffer
      */
-    private final BlockingDeque<Byte> buffer;
+    private final ByteBuf buffer;
 
     private final ReadStream<Buffer> readStream;
 
     /**
-     * Synchronization lock
-     */
-    private final Lock lock = new ReentrantLock();
-
-    /**
-     * Stream event condition
-     */
-    private final Condition event = lock.newCondition();
-
-    /**
      * Stream end indicator
      */
-    private final AtomicBoolean finished = new AtomicBoolean(false);
+    private boolean finished = false;
 
     /**
      * Stream error
      */
-    private final AtomicReference<Throwable> error = new AtomicReference<>(null);
+    private Throwable error = null;
 
     /**
      * Create input stream with default buffer and pooling interval
      *
      * @param readStream the read stream
      */
-    public ReadStreamInputStream(ReadStream<Buffer> readStream) {
-        this(readStream, BUFFER_SIZE, 0, TimeUnit.MILLISECONDS);
+    public ReadStreamInputStream(Vertx vertx, ReadStream<Buffer> readStream) {
+        this(vertx, readStream, BUFFER_SIZE, 0, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -76,8 +64,8 @@ public class ReadStreamInputStream extends InputStream {
      * @param readStream the read stream
      * @param bufferSize the buffer size
      */
-    public ReadStreamInputStream(ReadStream<Buffer> readStream, int bufferSize) {
-        this(readStream, bufferSize, 0, TimeUnit.MILLISECONDS);
+    public ReadStreamInputStream(Vertx vertx, ReadStream<Buffer> readStream, int bufferSize) {
+        this(vertx, readStream, bufferSize, 0, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -87,8 +75,8 @@ public class ReadStreamInputStream extends InputStream {
      * @param timeout    the pooling timeout
      * @param timeUnit   the pooling timeout time unit
      */
-    public ReadStreamInputStream(ReadStream<Buffer> readStream, long timeout, TimeUnit timeUnit) {
-        this(readStream, BUFFER_SIZE, timeout, timeUnit);
+    public ReadStreamInputStream(Vertx vertx, ReadStream<Buffer> readStream, long timeout, TimeUnit timeUnit) {
+        this(vertx, readStream, BUFFER_SIZE, timeout, timeUnit);
     }
 
     /**
@@ -99,7 +87,7 @@ public class ReadStreamInputStream extends InputStream {
      * @param timeout    the pooling timeout
      * @param timeUnit   the pooling timeout time unit
      */
-    public ReadStreamInputStream(ReadStream<Buffer> readStream, int bufferSize, long timeout, TimeUnit timeUnit) {
+    public ReadStreamInputStream(Vertx vertx, ReadStream<Buffer> readStream, int bufferSize, long timeout, TimeUnit timeUnit) {
         Objects.requireNonNull(readStream, "readStream must not be null");
 
         if (bufferSize < 0) {
@@ -110,115 +98,148 @@ public class ReadStreamInputStream extends InputStream {
             throw new IllegalArgumentException("Invalid timeout");
         }
 
-        this.timeout = timeUnit.toNanos(timeout);
+        this.vertx = vertx;
 
-        this.buffer = new LinkedBlockingDeque<>();
+        this.buffer = Unpooled.buffer(bufferSize);
+
+        this.timeout = timeUnit.toMillis(timeout);
 
         this.readStream = readStream;
 
-        this.readStream.handler(buf -> {
-            int i = 0;
-
-            // Read bytes to buffer
-            while (i < buf.length()) {
-                buffer.offerFirst(buf.getByte(i));
-                i++;
-            }
-
-            if (buffer.size() >= bufferSize) {
-                // Pause if there are remains
-                readStream.pause();
-            }
-
-            lock.lock();
-            try {
-                event.signal();
-            } finally {
-                lock.unlock();
-            }
-        });
-
-        this.readStream.endHandler(end -> {
-            finished.set(true);
-
-            lock.lock();
-            try {
-                event.signal();
-            } finally {
-                lock.unlock();
-            }
-        });
-
+        // Set exception handler
         this.readStream.exceptionHandler(err -> {
-            error.set(err);
+            synchronized (this) {
+                error = err;
+                this.notify();
+            }
+        });
 
-            lock.lock();
-            try {
-                event.signal();
-            } finally {
-                lock.unlock();
+        // Set data handler
+        this.readStream.handler(buf -> {
+            synchronized (this) {
+                if (!buffer.isWritable(buf.length())) {
+                    buffer.discardSomeReadBytes();
+
+                    if (!buffer.isWritable(buf.length())) {
+                        buffer.capacity(buf.length() - buffer.writableBytes() + buffer.capacity());
+                    }
+                }
+
+                buffer.writeBytes(buf.getByteBuf());
+
+                if (buffer.readableBytes() >= bufferSize) {
+                    // Pause if there are remains
+                    readStream.pause();
+                }
+
+                this.notify();
+            }
+        });
+
+        // Set end handler
+        this.readStream.endHandler(end -> {
+            synchronized (this) {
+                finished = true;
+                this.notify();
             }
         });
     }
 
     @Override
-    public int read() throws IOException {
+    public synchronized int read() throws IOException {
+        // Check for error
+        if (error != null) {
+            throw new IOException(error);
+        }
+
         try {
-            return readInternal();
+            if (!buffer.isReadable()) {
+                if (finished) {
+                    return -1;
+                }
+
+                // Resume read
+                vertx.runOnContext(v -> {
+                    if (!finished && error == null) {
+                        readStream.resume();
+                    }
+                });
+
+                this.wait(timeout);
+
+                // Finished after resume
+                if (finished) {
+                    return -1;
+                }
+
+                // Error after resume
+                if (error != null) {
+                    throw new IOException(error);
+                }
+
+                if (!buffer.isReadable()) {
+                    throw new IllegalStateException("Unexpected event sequence");
+                }
+            }
+
+            return Byte.toUnsignedInt(buffer.readByte());
         } catch (InterruptedException e) {
             throw new IOException(e);
         }
     }
 
-    private int readInternal() throws IOException, InterruptedException {
-        Byte b = buffer.pollLast();
-        boolean empty = b == null;
-
-        if (empty) {
-            // Already finished
-            if (finished.get()) {
-                return -1;
-            }
-
-            // Has error
-            if (error.get() != null) {
-                throw new IOException(error.get());
-            }
-
-            // Resume reading
-            readStream.resume();
-
-            lock.lock();
-            try {
-                if (timeout > 0) {
-                    if (event.awaitNanos(timeout) <= 0) {
-                        throw new IOException("Read stream timeout, no data arrived in " + timeout + " nanoseconds");
-                    }
-                } else {
-                    event.await();
-                }
-            } finally {
-                lock.unlock();
-            }
-
-            b = buffer.pollLast();
-
-            if (b == null) {
-                // Finished after resume
-                if (finished.get()) {
-                    return -1;
-                }
-
-                // Error after resume
-                if (error.get() != null) {
-                    throw new IOException(error.get());
-                }
-
-                throw new IllegalStateException("Unexpected event sequence");
-            }
+    @Override
+    public synchronized int read(byte[] b, int off, int len) throws IOException {
+        // Check for error
+        if (error != null) {
+            throw new IOException(error);
         }
 
-        return Byte.toUnsignedInt(b);
+        int readable = buffer.readableBytes();
+        int length = Math.min(readable, len);
+
+        if (len == 0) {
+            return 0;
+        }
+
+        if (readable == 0) {
+            return super.read(b, off, len);
+        }
+
+        buffer.readBytes(b, off, length);
+        return length;
     }
 
+    @Override
+    public synchronized long skip(long n) throws IOException {
+        // Check for error
+        if (error != null) {
+            throw new IOException(error);
+        }
+
+        int skip = (int) n;
+        int readable = buffer.readableBytes();
+
+        if (readable >= skip) {
+            buffer.skipBytes(skip);
+            return skip;
+        }
+
+        if (readable > 0 && readable < skip) {
+            buffer.skipBytes(readable);
+            return readable;
+        }
+
+        return super.skip(n);
+    }
+
+    @Override
+    public synchronized int available() throws IOException {
+        return buffer.readableBytes();
+    }
+
+    @Override
+    public void close() throws IOException {
+        buffer.release();
+    }
 }

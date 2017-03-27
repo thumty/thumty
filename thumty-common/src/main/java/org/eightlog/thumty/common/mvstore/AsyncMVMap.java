@@ -1,8 +1,6 @@
 package org.eightlog.thumty.common.mvstore;
 
 import io.vertx.core.*;
-import io.vertx.core.impl.ContextImpl;
-import io.vertx.core.impl.ContextInternal;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 
@@ -14,20 +12,20 @@ import java.util.function.Supplier;
  */
 public class AsyncMVMap<K, V> {
 
-    private final WorkerExecutor executor;
+    private final Context context;
 
     private final MVStore mvStore;
 
     private final MVMap<K, V> mvMap;
 
     public AsyncMVMap(Context context, MVStore mvStore, MVMap<K, V> mvMap) {
-        this.executor = ((ContextInternal)context).createWorkerExecutor();
+        this.context = context;
         this.mvStore = mvStore;
         this.mvMap = mvMap;
     }
 
     public AsyncMVMap(Vertx vertx, MVStore mvStore, MVMap<K, V> mvMap) {
-        this.executor = ((ContextImpl)vertx.getOrCreateContext()).createWorkerExecutor();
+        this.context = vertx.getOrCreateContext();
         this.mvStore = mvStore;
         this.mvMap = mvMap;
     }
@@ -86,7 +84,7 @@ public class AsyncMVMap<K, V> {
     }
 
     public <T> void execute(Function<MVMap<K, V>, T> func, Handler<AsyncResult<T>> handler) {
-        executor.executeBlocking(future -> {
+        context.executeBlocking(future -> {
             try {
                 future.complete(func.apply(mvMap));
             }catch (Throwable t){
@@ -96,7 +94,7 @@ public class AsyncMVMap<K, V> {
     }
 
     private <T> void execute(Supplier<T> supplier, Handler<AsyncResult<T>> handler) {
-        executor.executeBlocking(future -> {
+        context.executeBlocking(future -> {
             try {
                 future.complete(supplier.get());
             }catch (Throwable t){
@@ -106,7 +104,7 @@ public class AsyncMVMap<K, V> {
     }
 
     private void executeVoid(SupplierVoid supplier, Handler<AsyncResult<Void>> handler) {
-        executor.executeBlocking(future -> {
+        context.executeBlocking(future -> {
             try {
                 supplier.get();
                 future.complete();

@@ -1,6 +1,7 @@
 package org.eightlog.thumty.server;
 
 import io.vertx.core.json.JsonObject;
+import org.eightlog.thumty.common.text.DurationParser;
 import org.eightlog.thumty.server.params.ThumbParams;
 
 import javax.annotation.Nullable;
@@ -31,7 +32,7 @@ public class ThumtyOptions {
     }
 
     public Integer getPort() {
-        return config.getInteger("post", DEFAULT_PORT);
+        return config.getInteger("port", DEFAULT_PORT);
     }
 
     public String getSecret() {
@@ -40,6 +41,10 @@ public class ThumtyOptions {
 
     public boolean isSecured() {
         return config.getBoolean("secured", false);
+    }
+
+    public long getResponseTimeout() {
+        return DurationParser.parse(config.getString("response_timeout", null));
     }
 
     @Nullable
