@@ -143,7 +143,7 @@ public class ThumbParamsParser {
                 Mac mac = Mac.getInstance("HmacSHA1");
                 mac.init(spec);
 
-                String sign = BaseEncoding.base64Url().encode(
+                String sign = BaseEncoding.base64Url().omitPadding().encode(
                         mac.doFinal(remains().getBytes(Charset.forName("UTF-8")))
                 );
 

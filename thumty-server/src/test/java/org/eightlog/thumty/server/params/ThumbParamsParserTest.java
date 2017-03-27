@@ -145,7 +145,7 @@ public class ThumbParamsParserTest {
             Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(spec);
 
-            return BaseEncoding.base64Url().encode(mac.doFinal(value.getBytes(Charset.forName("UTF-8"))));
+            return BaseEncoding.base64Url().omitPadding().encode(mac.doFinal(value.getBytes(Charset.forName("UTF-8"))));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
