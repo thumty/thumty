@@ -167,7 +167,7 @@ public class ThumbBuilder {
 
         vertx.executeBlocking(result -> {
             try {
-                try (InputStream input = new ReadStreamInputStream(stream, READ_STREAM_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                try (InputStream input = new ReadStreamInputStream(vertx, stream, READ_STREAM_TIMEOUT, TimeUnit.MILLISECONDS)) {
                     result.complete(new InputStreamImageInput(sampler(params)).read(input));
                 } catch (IOException | UnsupportedFormatException e) {
                     result.fail(e);

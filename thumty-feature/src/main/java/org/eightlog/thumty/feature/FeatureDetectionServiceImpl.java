@@ -114,7 +114,7 @@ public class FeatureDetectionServiceImpl implements FeatureDetectionService {
         Future<Features> future = Future.future();
         vertx.executeBlocking(result -> {
             try {
-                try (InputStream input = new ReadStreamInputStream(stream, READ_STREAM_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                try (InputStream input = new ReadStreamInputStream(vertx, stream, READ_STREAM_TIMEOUT, TimeUnit.MILLISECONDS)) {
                     Image image = new InputStreamImageInput(new SizeSampler(options.getResize())).read(input);
                     BufferedImage source = image.getSource();
 

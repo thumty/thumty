@@ -1,5 +1,7 @@
 package org.eightlog.thumty.common.stream;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.WriteStream;
 
@@ -7,9 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author <a href="mailto:iliya.gr@gmail.com">Iliya Grushevskiy</a>
@@ -26,13 +25,9 @@ public class WriteStreamOutputStream extends OutputStream {
      */
     private final WriteStream<Buffer> writeStream;
 
-    private final Lock lock = new ReentrantLock();
-    private final Condition open = lock.newCondition();
+    private final ByteBuf buffer;
 
-    private final Buffer buffer;
     private final long timeout;
-    private int length;
-    private int pos = 0;
 
     /**
      * Create write stream output stream with default buffer size and timeout
@@ -85,43 +80,53 @@ public class WriteStreamOutputStream extends OutputStream {
 
         this.writeStream = writeStream;
         this.writeStream.drainHandler(v -> {
-            lock.lock();
-            try {
-                open.signal();
-            } finally {
-                lock.unlock();
+            synchronized (this) {
+                this.notify();
             }
         });
 
-        this.length = bufferSize;
-        this.buffer = Buffer.buffer(length);
+        this.buffer = Unpooled.buffer(bufferSize);
 
-        this.timeout = timeUnit.toNanos(timeout);
+        this.timeout = timeUnit.toMillis(timeout);
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public synchronized void write(byte[] b, int off, int len) throws IOException {
         try {
             if (writeStream.writeQueueFull()) {
-                lock.lock();
-                try {
-                    if (timeout > 0) {
-                        if (open.awaitNanos(timeout) <= 0) {
-                            throw new IOException("Write stream timeout, no data could be written in " + timeout + " nanoseconds");
-                        }
-                    } else {
-                        open.await();
-                    }
-                } finally {
-                    lock.unlock();
+                if (timeout > 0) {
+                    this.wait(timeout);
+                } else {
+                    this.wait();
                 }
             }
 
-            buffer.setByte(pos++, (byte) b);
-
-            if (pos >= length) {
+            if (!buffer.isWritable(len)) {
                 flush();
             }
+
+            buffer.writeBytes(b, off, len);
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public synchronized void write(int b) throws IOException {
+        try {
+            if (writeStream.writeQueueFull()) {
+                if (timeout > 0) {
+                    this.wait(timeout);
+                } else {
+                    this.wait();
+                }
+            }
+
+            if (!buffer.isWritable()) {
+                flush();
+            }
+
+            buffer.writeByte(b);
         } catch (InterruptedException e) {
             throw new IOException(e);
         }
@@ -129,15 +134,21 @@ public class WriteStreamOutputStream extends OutputStream {
 
     @Override
     public void flush() throws IOException {
-        if (pos > 0) {
-            writeStream.write(buffer.slice(0, pos).copy());
-            pos = 0;
+        if (buffer.isReadable()) {
+            byte[] buf = new byte[buffer.readableBytes()];
+
+            buffer.readBytes(buf);
+            buffer.discardSomeReadBytes();
+
+            writeStream.write(Buffer.buffer(buf));
         }
     }
 
     @Override
     public void close() throws IOException {
         flush();
+
         writeStream.end();
+        buffer.release();
     }
 }

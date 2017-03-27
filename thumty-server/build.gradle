@@ -19,10 +19,13 @@ dependencies {
     compile libraries.vertx_core
 
     compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
+
+    compile 'org.slf4j:slf4j-jdk14:1.7.21'
 }
 
 shadowJar {
     classifier = platform()
+    mergeServiceFiles()
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
         attributes 'Main-Verticle': 'org.eightlog.thumty.server.Thumty'
