@@ -117,7 +117,6 @@ public class ReadStreamInputStream extends InputStream {
         // Set data handler
         this.readStream.handler(buf -> {
             synchronized (this) {
-
                 if (!buffer.isWritable(buf.length())) {
                     buffer.discardSomeReadBytes();
 
@@ -148,16 +147,17 @@ public class ReadStreamInputStream extends InputStream {
 
     @Override
     public synchronized int read() throws IOException {
+        // Check for error
+        if (error != null) {
+            throw new IOException(error);
+        }
+
         try {
-            if (finished) {
-                return -1;
-            }
-
-            if (error != null) {
-                throw new IOException(error);
-            }
-
             if (!buffer.isReadable()) {
+                if (finished) {
+                    return -1;
+                }
+
                 // Resume read
                 vertx.runOnContext(v -> {
                     if (!finished && error == null) {
@@ -190,6 +190,11 @@ public class ReadStreamInputStream extends InputStream {
 
     @Override
     public synchronized int read(byte[] b, int off, int len) throws IOException {
+        // Check for error
+        if (error != null) {
+            throw new IOException(error);
+        }
+
         int readable = buffer.readableBytes();
         int length = Math.min(readable, len);
 
@@ -207,6 +212,11 @@ public class ReadStreamInputStream extends InputStream {
 
     @Override
     public synchronized long skip(long n) throws IOException {
+        // Check for error
+        if (error != null) {
+            throw new IOException(error);
+        }
+
         int skip = (int) n;
         int readable = buffer.readableBytes();
 

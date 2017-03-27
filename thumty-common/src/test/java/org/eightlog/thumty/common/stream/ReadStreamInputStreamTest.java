@@ -119,8 +119,6 @@ public class ReadStreamInputStreamTest {
 
         readStream.write(new byte[]{0x00, 0x01, 0x02});
         readStream.error(new Exception("Error"));
-        readStream.write(new byte[]{0x00, 0x01, 0x02});
-        readStream.end();
     }
 
     private class FakeReadStream implements ReadStream<Buffer> {
@@ -138,11 +136,15 @@ public class ReadStreamInputStreamTest {
         public FakeReadStream(long delay) {
             rule.vertx().setPeriodic(delay, v -> {
                 if (ended && deque.size() == 0) {
+                    rule.vertx().cancelTimer(v);
+
                     endHandler.handle(null);
                 }
 
                 if (!paused && deque.size() > 0) {
-                    handler.handle(deque.pollLast());
+                    if (handler != null) {
+                        handler.handle(deque.pollLast());
+                    }
                 }
             });
         }
