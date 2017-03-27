@@ -1,6 +1,7 @@
 # Thumty
 [![CircleCI](https://circleci.com/gh/thumty/thumty.svg?style=svg)](https://circleci.com/gh/thumty/thumty)
 [![codecov](https://codecov.io/gh/thumty/thumty/branch/master/graph/badge.svg)](https://codecov.io/gh/thumty/thumty)
+[![Dependency Status](https://www.versioneye.com/user/projects/58d95960d6c98d004174757c/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58d95960d6c98d004174757c)
 
 ## About
 Thumty is on-demand smart resizing and post-processing imaging service, written entirely in Java. 
