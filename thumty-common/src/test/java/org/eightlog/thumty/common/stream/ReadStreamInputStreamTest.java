@@ -111,7 +111,6 @@ public class ReadStreamInputStreamTest {
             } catch (IOException e) {
                 f.fail(e);
             }
-
         }, res -> {
             ctx.assertTrue(res.failed());
             async.complete();
@@ -119,6 +118,7 @@ public class ReadStreamInputStreamTest {
 
         readStream.write(new byte[]{0x00, 0x01, 0x02});
         readStream.error(new Exception("Error"));
+        readStream.end();
     }
 
     private class FakeReadStream implements ReadStream<Buffer> {
