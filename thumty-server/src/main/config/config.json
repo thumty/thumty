@@ -5,6 +5,7 @@
   // Base 64 encoded secret key
   "secret": "i9ccFBc9cMbg5k+iQyvxVRFS05QoAoaqpTbYFOdjjFI=",
   "secured": false,
+  "response_timeout": "60sec",
 
   "loaders": {
     // Http loader configuration, http loader disabled if omitted.

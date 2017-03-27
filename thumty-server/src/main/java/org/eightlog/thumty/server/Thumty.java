@@ -8,7 +8,9 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.streams.Pump;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.LoggerHandler;
 import io.vertx.ext.web.handler.ResponseTimeHandler;
+import io.vertx.ext.web.handler.TimeoutHandler;
 import org.eightlog.thumty.feature.FeatureDetectionVertical;
 import org.eightlog.thumty.image.io.UnsupportedFormatException;
 import org.eightlog.thumty.loader.LoaderException;
@@ -61,7 +63,13 @@ public class Thumty extends AbstractVerticle {
 
                 Router router = Router.router(vertx);
 
-                router.get().handler(ResponseTimeHandler.create());
+                router.route().handler(LoggerHandler.create());
+                router.route().handler(ResponseTimeHandler.create());
+
+                if (options.getResponseTimeout() > 0) {
+                    router.route().handler(TimeoutHandler.create(options.getResponseTimeout()));
+                }
+
                 router.get().handler(this::buildVariant);
                 router.get().handler(this::buildThumb);
 
