@@ -113,13 +113,13 @@ public class ReadStreamInputStreamTest {
             }
 
         }, res -> {
-            async.complete();
             ctx.assertTrue(res.failed());
+            async.complete();
         });
 
         readStream.write(new byte[]{0x00, 0x01, 0x02});
-        readStream.write(new byte[]{0x00, 0x01, 0x02});
         readStream.error(new Exception("Error"));
+        readStream.write(new byte[]{0x00, 0x01, 0x02});
         readStream.end();
     }
 

@@ -115,10 +115,10 @@ public class WriteStreamOutputStream extends OutputStream {
     public synchronized void write(int b) throws IOException {
         try {
             if (writeStream.writeQueueFull()) {
-                if (timeout > 0) {
-                    this.wait(timeout);
-                } else {
-                    this.wait();
+                this.wait(timeout);
+
+                if (writeStream.writeQueueFull()) {
+                    throw new IOException("Write stream timeout, no data could be written in " + timeout + " milliseconds");
                 }
             }
 

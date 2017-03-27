@@ -106,6 +106,15 @@ public class ReadStreamInputStream extends InputStream {
 
         this.readStream = readStream;
 
+        // Set exception handler
+        this.readStream.exceptionHandler(err -> {
+            synchronized (this) {
+                error = err;
+                this.notify();
+            }
+        });
+
+        // Set data handler
         this.readStream.handler(buf -> {
             synchronized (this) {
 
@@ -128,16 +137,10 @@ public class ReadStreamInputStream extends InputStream {
             }
         });
 
+        // Set end handler
         this.readStream.endHandler(end -> {
             synchronized (this) {
                 finished = true;
-                this.notify();
-            }
-        });
-
-        this.readStream.exceptionHandler(err -> {
-            synchronized (this) {
-                error = err;
                 this.notify();
             }
         });
@@ -164,17 +167,17 @@ public class ReadStreamInputStream extends InputStream {
 
                 this.wait(timeout);
 
+                // Finished after resume
+                if (finished) {
+                    return -1;
+                }
+
+                // Error after resume
+                if (error != null) {
+                    throw new IOException(error);
+                }
+
                 if (!buffer.isReadable()) {
-                    // Finished after resume
-                    if (finished) {
-                        return -1;
-                    }
-
-                    // Error after resume
-                    if (error != null) {
-                        throw new IOException(error);
-                    }
-
                     throw new IllegalStateException("Unexpected event sequence");
                 }
             }
