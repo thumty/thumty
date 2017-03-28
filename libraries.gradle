@@ -1,6 +1,6 @@
 ext {
     libVersions = [
-            guava        : '19.0',
+            guava        : '21.0',
             restAssured  : '2.8.0',
             hamcrest     : '1.3',
             mockito      : '1.9.5',
@@ -10,7 +10,7 @@ ext {
             postgresql   : '9.1-901-1.jdbc4',
             wiremock     : '1.58',
             vertx        : '3.4.1',
-            jsr305       : '1.3.9',
+            jsr305       : '3.0.1',
             tika         : '1.13',
             h2db         : '1.3.176',
             h2db4        : '1.4.192',
