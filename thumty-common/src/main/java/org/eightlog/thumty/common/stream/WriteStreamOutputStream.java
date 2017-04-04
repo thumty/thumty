@@ -91,63 +91,51 @@ public class WriteStreamOutputStream extends OutputStream {
     }
 
     @Override
-    public synchronized void write(byte[] b, int off, int len) throws IOException {
-        try {
-            if (writeStream.writeQueueFull()) {
-                if (timeout > 0) {
-                    this.wait(timeout);
-                } else {
-                    this.wait();
-                }
-            }
-
-            if (!buffer.isWritable(len)) {
-                flush();
-            }
-
-            buffer.writeBytes(b, off, len);
-        } catch (InterruptedException e) {
-            throw new IOException(e);
+    public void write(byte[] b, int off, int len) throws IOException {
+        if (!buffer.isWritable(len)) {
+            flush();
         }
+
+        buffer.writeBytes(b, off, len);
     }
 
     @Override
-    public synchronized void write(int b) throws IOException {
-        try {
-            if (writeStream.writeQueueFull()) {
-                this.wait(timeout);
+    public void write(int b) throws IOException {
+        if (!buffer.isWritable()) {
+            flush();
+        }
 
+        buffer.writeByte(b);
+    }
+
+    @Override
+    public synchronized void flush() throws IOException {
+        try {
+            while (buffer.isReadable()) {
                 if (writeStream.writeQueueFull()) {
-                    throw new IOException("Write stream timeout, no data could be written in " + timeout + " milliseconds");
+                    this.wait(timeout);
+
+                    if (writeStream.writeQueueFull()) {
+                        throw new IOException("Write stream timeout, no data could be written in " + timeout + " milliseconds");
+                    }
                 }
-            }
 
-            if (!buffer.isWritable()) {
-                flush();
-            }
+                int size = Math.min(BUFFER_SIZE, buffer.readableBytes());
+                byte[] buf = new byte[size];
 
-            buffer.writeByte(b);
+                buffer.readBytes(buf);
+                buffer.discardReadBytes();
+
+                writeStream.write(Buffer.buffer(buf));
+            }
         } catch (InterruptedException e) {
             throw new IOException(e);
-        }
-    }
-
-    @Override
-    public void flush() throws IOException {
-        if (buffer.isReadable()) {
-            byte[] buf = new byte[buffer.readableBytes()];
-
-            buffer.readBytes(buf);
-            buffer.discardSomeReadBytes();
-
-            writeStream.write(Buffer.buffer(buf));
         }
     }
 
     @Override
     public void close() throws IOException {
         flush();
-
         writeStream.end();
         buffer.release();
     }

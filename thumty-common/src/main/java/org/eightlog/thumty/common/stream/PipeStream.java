@@ -8,7 +8,6 @@ import io.vertx.core.streams.WriteStream;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
@@ -23,8 +22,8 @@ public class PipeStream<T> {
      */
     private static final int QUEUE_SIZE = 512;
 
-    private final AtomicBoolean paused = new AtomicBoolean();
-    private final AtomicBoolean ended = new AtomicBoolean();
+    private boolean paused;
+    private boolean ended;
 
     private PipeReadStream<T> readStream;
 
@@ -67,22 +66,19 @@ public class PipeStream<T> {
         return CompositeFuture.all(ws.apply(writeStream), rs.apply(readStream)).map(f -> f.resultAt(1));
     }
 
-    private void write() {
-        if (readStream.handler != null) {
-            boolean isFull = queue.size() >= QUEUE_SIZE;
+    private void flush() {
+        boolean isFull = queue.size() >= QUEUE_SIZE;
 
-            T t;
-            while ((t = queue.pollLast()) != null && !paused.get()) {
-                handleData(t);
-            }
+        while (!paused && !queue.isEmpty()) {
+            handleData(queue.pollLast());
+        }
 
-            if (isFull && queue.size() < QUEUE_SIZE / 2) {
-                handleDrain();
-            }
+        if (isFull && queue.size() < QUEUE_SIZE) {
+            handleDrain();
+        }
 
-            if (ended.get() && queue.isEmpty()) {
-                handleEnd();
-            }
+        if (ended && queue.isEmpty()) {
+            handleEnd();
         }
     }
 
@@ -147,14 +143,14 @@ public class PipeStream<T> {
         @Override
         public WriteStream<T> write(T data) {
             coordinator.queue.offerFirst(data);
-            coordinator.write();
+            coordinator.flush();
             return this;
         }
 
         @Override
         public void end() {
-            coordinator.ended.set(true);
-            coordinator.write();
+            coordinator.ended = true;
+            coordinator.flush();
         }
 
         @Override
@@ -199,14 +195,14 @@ public class PipeStream<T> {
 
         @Override
         public ReadStream<T> pause() {
-            coordinator.paused.set(true);
+            coordinator.paused = true;
             return this;
         }
 
         @Override
         public ReadStream<T> resume() {
-            coordinator.paused.set(false);
-            coordinator.write();
+            coordinator.paused = false;
+            coordinator.flush();
             return this;
         }
 
