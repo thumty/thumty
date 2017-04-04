@@ -134,13 +134,12 @@ public class ThumbBuilder {
 
         vertx.executeBlocking(result -> {
             try (OutputStream output = new WriteStreamOutputStream(stream, WRITE_STREAM_TIMEOUT, TimeUnit.MILLISECONDS)) {
-
                 ImageOutput writer = new OutputStreamImageOutput(output);
 
                 float quality = getWriteQuality(image);
                 String format = getWriteFormat(writer, image);
 
-                new OutputStreamImageOutput(output).write(image.getSource(), format, quality);
+                writer.write(image.getSource(), format, quality);
                 result.complete();
             } catch (IOException | UnsupportedFormatException e) {
                 result.fail(e);
