@@ -167,17 +167,17 @@ public class ReadStreamInputStream extends InputStream {
 
                 this.wait(timeout);
 
-                // Finished after resume
-                if (finished) {
-                    return -1;
-                }
+                if(!buffer.isReadable()) {
+                    // Finished after resume
+                    if (finished) {
+                        return -1;
+                    }
 
-                // Error after resume
-                if (error != null) {
-                    throw new IOException(error);
-                }
+                    // Error after resume
+                    if (error != null) {
+                        throw new IOException(error);
+                    }
 
-                if (!buffer.isReadable()) {
                     throw new IllegalStateException("Unexpected event sequence");
                 }
             }
