@@ -13,8 +13,8 @@ dependencies {
     compile libraries.vertx_service_proxy
 
     // OpenCV
-    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.1.0-1.2'
-    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.1.0-1.2', classifier: platform()
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.2.0-1.3'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '3.2.0-1.3', classifier: platform()
 }
 
 
